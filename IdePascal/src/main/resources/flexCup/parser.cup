@@ -1,0 +1,225 @@
+
+package com.baquiax.idepascal.backend;
+
+import java_cup.runtime.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+//errores
+import com.baquiax.idepascal.backend.errores.*;
+//sentencia
+import com.baquiax.idepascal.backend.stament.*;
+//simbol, tabla-simbolos/entorno, AST
+import com.baquiax.idepascal.backend.simbol.*;
+//expresiones
+import com.baquiax.idepascal.backend.expresion.*;
+import com.baquiax.idepascal.backend.expresion.operacion.aritmetica.*;
+import com.baquiax.idepascal.backend.expresion.operacion.booleanos.*;
+import com.baquiax.idepascal.backend.expresion.operacion.relacional.*;
+//declaraciones
+import com.baquiax.idepascal.backend.declaracion.*;
+//simbol
+import com.baquiax.idepascal.backend.simbol.*;
+
+parser code {:
+
+    public Parser(Lexer lexer){
+    super(lexer);
+    }
+
+    public List<ErrorPascal> listaErrores = new ArrayList<>();
+
+    public void syntax_error(Symbol s) {
+            String description = "No se esperaba el componente: " + (s.value) + ".";
+            System.out.println(description);
+            listaErrores.add(new ErrorPascal(TipoError.SEMANTICO.name(), description, s.left, s.right));
+    }
+    public void unrecovered_syntax_error(Symbol s) {
+            String description = "No se esperaba el componente: " + (s.value) + ".";
+            System.out.println(description);
+            listaErrores.add(new ErrorPascal(TipoError.SEMANTICO.name(), description, s.left, s.right));
+    }
+:};
+
+action code
+{:
+:}
+
+terminal AND, ARRAY, BEGIN, BREAK, CASE, CONST, TKCHAR, CONTINUE, DIV, DO, DOWNTO, ELSE, END;
+terminal FILE, FUNCTION, GOTO, IF, IN, LABEL, MOD, NOT, OF, OR, PACKED, PROCEDURE;
+terminal PROGRAM, RECORD, REAL, REPEAT, READLN, SET, THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH;
+terminal WRITELN, INTEGER, FOR, MENOS, SUMA, MULTI, DIVISION, IGUAL, COMA, PUNTO_COMA;
+terminal PUNTO, TRES_PUNTO, DOS_PUNTOS, PAR_A, PAR_C, COR_A, COR_C, IGUALACION, LLAVE_A, LLAVE_C, COMILLA;
+terminal DIFERENTE, MAYOR, MENOR, MENOR_IGUAL, MAYOR_IGUAL;
+terminal LONGINT, STRING, BOOLEAN, UNARIO;
+terminal String IDENTIFICADOR, ENTERO, DECIMAL, CADENA, TRUE, FALSE;
+//terminal CARCTER;
+
+//nonterminal
+nonterminal List<Sentencia> inicio, staments, inicial_sentencias, inicial_sentencia;
+nonterminal List<Sentencia> body_sentencias, body_sentencia;
+nonterminal Sentencia stament;
+nonterminal Sentencia declaracion_tipos;
+nonterminal List<SentenciaTipo> tipos;
+nonterminal SentenciaTipo tipo;
+nonterminal Sentencia declaracion_contantes;
+nonterminal List<Constante> constantes;
+nonterminal Constante constante;
+nonterminal Sentencia declaracion_variable;
+nonterminal List<Variable> variables;
+nonterminal Variable variable, variable_record;
+nonterminal List<AtributoRecord> atributos_record;
+nonterminal AtributoRecord atributo_record;
+nonterminal List<String> ids_variables;
+nonterminal String id_variable;
+nonterminal Sentencia expresion;
+nonterminal Sentencia llamada_funcion;
+nonterminal Sentencia valor;
+nonterminal DataType data_type, data_type_record;
+
+precedence left OR;
+precedence left AND;
+precedence right NOT;
+precedence left IGUALACION, DIFERENTE, MENOR, MAYOR, MENOR_IGUAL, MAYOR_IGUAL;
+precedence left SUMA, MENOS;
+precedence left MULTI, DIVISION, DIV, MOD;
+precedence left UNARIO;
+
+start with inicio;
+
+inicio::= staments:a {: RESULT = a; :}
+;
+
+/*
+staments::=  staments:a stament:b {: RESULT = a; RESULT.add(b);  :}
+                | stament:a {: RESULT = new LinkedList<>(); RESULT.add(a); :}
+;
+stament::=    declaracion:a PUNTO_COMA {: RESULT = a; :}
+                | instancia_struct:a PUNTO_COMA {: RESULT = a; :}
+;
+*/
+staments::=   staments:a stament:b  {: RESULT = a; RESULT.add(b); :}
+            | stament:a  {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+;
+/*
+stament::=   PROGRAM IDENTIFICADOR inicial_sentencias BEGIN body_sentencias END PUNTO
+;*/
+
+stament::=    declaracion_tipos:a       {: RESULT = a; :}
+            | declaracion_contantes:a   {: RESULT = a; :}
+            | declaracion_variable:a    {: RESULT = a; :}
+;
+
+declaracion_tipos::= TYPE tipos:a   {: RESULT = new DeclaracionTipos(a, aleft, aright); :}
+;
+
+tipos::=  tipos:a tipo:b    {: RESULT = a; RESULT.add(b); :}
+        | tipo:a            {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+;
+
+tipo::=   ids_variables:ids IGUALACION data_type:d PUNTO_COMA
+            {: RESULT = new SentenciaTipo(ids, new Tipo(d), idsleft, idsright); :}
+        | ids_variables:ids IGUALACION expresion:e1 TRES_PUNTO expresion:e2 PUNTO_COMA
+            {: RESULT = new SentenciaTipo(ids, e1, e2, new Tipo("", DataType.SUBRANGO), idsleft, idsright); :}
+        | ids_variables:ids IGUALACION ARRAY COR_A expresion:e1 PUNTO PUNTO expresion:e2 COR_C OF data_type:a PUNTO_COMA
+            {: RESULT = new SentenciaTipo(ids, e1, e2, new Tipo(DataType.ARRAY), new Tipo(a), idsleft, idsright); :}
+;
+
+declaracion_contantes::= CONST:a constantes:b {: RESULT = new DeclaracionConstante(b, aleft, aright); :}
+;
+constantes::= constantes:a constante:b  {: RESULT =  a; RESULT.add(b); :}
+            | constante:a               {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+;
+
+
+constante::= IDENTIFICADOR:id IGUALACION expresion:ex PUNTO_COMA {: RESULT = new Constante(id, ex, idleft, idright); :}
+;
+
+declaracion_variable::= VAR:a variables:b {: RESULT = new DeclaracionVariable(b, aleft, aright); :}
+;
+
+variables::=  variables:a variable:b    {: RESULT = a; RESULT.add(b); :}
+            | variable:a                {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+;
+
+variable::=   ids_variables:ids DOS_PUNTOS data_type:a PUNTO_COMA
+                {: RESULT = new Variable(1, ids, new Tipo(a), idsleft, idsright); :}
+            | ids_variables:ids DOS_PUNTOS data_type:a IGUALACION expresion:e PUNTO_COMA
+                {: RESULT = new Variable(1, ids, new Tipo(a), e, idsleft, idsright); :}
+            | ids_variables:ids DOS_PUNTOS IDENTIFICADOR:a PUNTO_COMA
+                {: RESULT = new Variable(2, ids, a, idsleft, idsright); :}
+            | ids_variables:ids DOS_PUNTOS expresion:e1 TRES_PUNTO expresion:e2 PUNTO_COMA
+                {: RESULT = new Variable(3, ids, e1, e2, idsleft, idsright); :}
+            | ids_variables:ids DOS_PUNTOS ARRAY COR_A expresion:e1 PUNTO PUNTO expresion:e2 COR_C OF data_type:a PUNTO_COMA
+                {: RESULT = new Variable(4, ids, e1, e2, new Tipo(a), idsleft, idsright); :}
+            | ids_variables:ids DOS_PUNTOS ARRAY COR_A expresion:e1 PUNTO PUNTO expresion:e2 COR_C OF IDENTIFICADOR:id PUNTO_COMA
+                {: RESULT = new Variable(5, ids, e1, e2, id, idsleft, idsright); :}
+            | variable_record:a {: RESULT = a; :}
+;
+
+variable_record::= VAR IDENTIFICADOR DOS_PUNTOS RECORD atributos_record END PUNTO_COMA
+;
+
+atributos_record::=   atributos_record:a atributo_record:b  {: RESULT = a; RESULT.add(b); :}
+                    | atributo_record:a                     {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+;
+
+atributo_record::=    ids_variables DOS_PUNTOS PACKED ARRAY COR_A expresion PUNTO PUNTO expresion COR_C OF data_type PUNTO_COMA
+                    | ids_variables DOS_PUNTOS data_type PUNTO_COMA
+                    | ids_variables DOS_PUNTOS IDENTIFICADOR PUNTO_COMA
+;
+
+ids_variables::=  ids_variables:a COMA id_variable:b    {: RESULT = a; RESULT.add(b); :}
+                | id_variable:a                         {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+;
+
+id_variable::= IDENTIFICADOR:a {: RESULT = a; :}
+;
+
+inicial_sentencias::=    inicial_sentencias inicial_sentencia
+                    |   inicial_sentencia
+;
+
+inicial_sentencia::= declaracion_tipos
+;
+
+expresion::=  expresion:a SUMA:c expresion:b         {: RESULT = new Suma(a, b, cleft, cright); :}
+            | expresion:a MENOS expresion:b
+            | expresion:a MULTI expresion:b
+            | expresion:a DIVISION expresion:b
+            | expresion:a DIV expresion:b
+            | expresion:a MOD expresion:b
+            | expresion:a IGUALACION expresion:b
+            | expresion:a DIFERENTE expresion:b
+            | expresion:a MAYOR expresion:b
+            | expresion:a MENOR expresion:b
+            | expresion:a MAYOR_IGUAL expresion:b
+            | expresion:a MENOR_IGUAL expresion:b
+            | expresion:a AND expresion:b
+            | expresion:a AND THEN expresion:b
+            | expresion:a OR expresion:b
+            | expresion:a OR ELSE expresion:b
+            | NOT expresion:a
+            | MENOS expresion:a                     {: RESULT = a; :} %prec UNARIO
+            | valor:a                               {: RESULT = a; :}
+;
+
+//public Terminal(Object value, Tipo tipo, int line, int col) {
+valor::=  ENTERO:a  {: RESULT = new Terminal(Integer.parseInt(a), new Tipo(DataType.ENTERO), aleft, aright); :}
+        | DECIMAL:a {: RESULT = new Terminal(Double.parseDouble(a), new Tipo(DataType.REAL), aleft, aright); :}
+        | CADENA:a  {: RESULT = new Terminal(a, new Tipo(DataType.CADENA), aleft, aright); :}
+        | TRUE:a    {: RESULT = new Terminal(true, new Tipo(DataType.BOOLEAN), aleft, aright); :}
+        | FALSE:a   {: RESULT = new Terminal(false, new Tipo(DataType.BOOLEAN), aleft, aright); :}
+        | IDENTIFICADOR:a
+        | IDENTIFICADOR:a COR_A expresion:b COR_C
+;
+
+data_type::=  INTEGER:a {: RESULT = DataType.ENTERO; :}
+            | REAL:a    {: RESULT = DataType.REAL; :}
+            | BOOLEAN:a {: RESULT = DataType.BOOLEAN; :}
+            | STRING:a  {: RESULT = DataType.CADENA; :}
+            | TKCHAR:a  {: RESULT = DataType.CARACTER; :}
+;
+
+
