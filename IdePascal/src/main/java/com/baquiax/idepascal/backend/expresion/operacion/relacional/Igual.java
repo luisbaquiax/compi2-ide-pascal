@@ -38,6 +38,10 @@ public class Igual extends Sentencia {
             case ENTERO, REAL -> {
                 switch (der){
                     case ENTERO, REAL -> { return Double.parseDouble(izquierdo.toString()) == Double.parseDouble(derecho.toString()); }
+                    case BOOLEAN -> {
+                        int auxi = Boolean.parseBoolean(derecho.toString()) ? 1 : 0;
+                        return auxi == (int) izquierdo;
+                    }
                     default -> {
                         return new ErrorPascal(
                                 TipoError.SEMANTICO.name(),
@@ -56,6 +60,10 @@ public class Igual extends Sentencia {
                                 this.operandoDer.line, this.operandoDer.col);
                     }
                 }
+            }
+            case BOOLEAN -> {
+                int auxi = Boolean.parseBoolean(izquierdo.toString()) ? 1 : 0;
+                return auxi == (int) derecho;
             }
             default -> {
                 return new ErrorPascal(

@@ -19,6 +19,8 @@ import com.baquiax.idepascal.backend.expresion.operacion.booleanos.*;
 import com.baquiax.idepascal.backend.expresion.operacion.relacional.*;
 //declaraciones
 import com.baquiax.idepascal.backend.declaracion.*;
+//funciones
+import com.baquiax.idepascal.backend.funcion.*;
 //simbol
 import com.baquiax.idepascal.backend.simbol.*;
 
@@ -31,7 +33,7 @@ parser code {:
     public List<ErrorPascal> listaErrores = new ArrayList<>();
 
     public void syntax_error(Symbol s) {
-            String description = "No se esperaba el componente: " + (s.value) + ".";
+            String description = "No se esperaba el componente: " + (s.value) + "." +s.left +" "+s.right;
             System.out.println(description);
             listaErrores.add(new ErrorPascal(TipoError.SEMANTICO.name(), description, s.left, s.right));
     }
@@ -74,7 +76,8 @@ nonterminal AtributoRecord atributo_record;
 nonterminal List<String> ids_variables;
 nonterminal String id_variable;
 nonterminal Sentencia expresion;
-nonterminal Sentencia llamada_funcion;
+nonterminal List<Sentencia> parametros_write;
+nonterminal Sentencia llamada_funcion, writeline, readline;
 nonterminal Sentencia valor;
 nonterminal DataType data_type, data_type_record;
 
@@ -104,11 +107,19 @@ staments::=   staments:a stament:b  {: RESULT = a; RESULT.add(b); :}
 ;
 /*
 stament::=   PROGRAM IDENTIFICADOR inicial_sentencias BEGIN body_sentencias END PUNTO
-;*/
+;
+inicial_sentencias::=    inicial_sentencias inicial_sentencia
+                    |   inicial_sentencia
+;
+inicial_sentencia::= declaracion_tipos
+;
+*/
 
 stament::=    declaracion_tipos:a       {: RESULT = a; :}
             | declaracion_contantes:a   {: RESULT = a; :}
             | declaracion_variable:a    {: RESULT = a; :}
+            | writeline:a               {: RESULT = a; :}
+            | readline:a                {: RESULT = a; :}
 ;
 
 declaracion_tipos::= TYPE tipos:a   {: RESULT = new DeclaracionTipos(a, aleft, aright); :}
@@ -155,10 +166,9 @@ variable::=   ids_variables:ids DOS_PUNTOS data_type:a PUNTO_COMA
                 {: RESULT = new Variable(4, ids, e1, e2, new Tipo(a), idsleft, idsright); :}
             | ids_variables:ids DOS_PUNTOS ARRAY COR_A expresion:e1 PUNTO PUNTO expresion:e2 COR_C OF IDENTIFICADOR:id PUNTO_COMA
                 {: RESULT = new Variable(5, ids, e1, e2, id, idsleft, idsright); :}
-            | variable_record:a {: RESULT = a; :}
 ;
 
-variable_record::= VAR IDENTIFICADOR DOS_PUNTOS RECORD atributos_record END PUNTO_COMA
+variable_record::= VAR:a IDENTIFICADOR:id DOS_PUNTOS RECORD atributos_record:b END PUNTO_COMA
 ;
 
 atributos_record::=   atributos_record:a atributo_record:b  {: RESULT = a; RESULT.add(b); :}
@@ -177,32 +187,36 @@ ids_variables::=  ids_variables:a COMA id_variable:b    {: RESULT = a; RESULT.ad
 id_variable::= IDENTIFICADOR:a {: RESULT = a; :}
 ;
 
-inicial_sentencias::=    inicial_sentencias inicial_sentencia
-                    |   inicial_sentencia
+writeline::= WRITELN:a PAR_A parametros_write:list PAR_C PUNTO_COMA {: RESULT = new WriteLine(list, aleft, aright); :}
 ;
 
-inicial_sentencia::= declaracion_tipos
+readline::= READLN:a PAR_A parametros_write:list PAR_C PUNTO_COMA {: RESULT = new Readline(list, aleft, aright); :}
 ;
 
-expresion::=  expresion:a SUMA:c expresion:b         {: RESULT = new Suma(a, b, cleft, cright); :}
-            | expresion:a MENOS expresion:b
-            | expresion:a MULTI expresion:b
-            | expresion:a DIVISION expresion:b
-            | expresion:a DIV expresion:b
-            | expresion:a MOD expresion:b
-            | expresion:a IGUALACION expresion:b
-            | expresion:a DIFERENTE expresion:b
-            | expresion:a MAYOR expresion:b
-            | expresion:a MENOR expresion:b
-            | expresion:a MAYOR_IGUAL expresion:b
-            | expresion:a MENOR_IGUAL expresion:b
-            | expresion:a AND expresion:b
+parametros_write::=   parametros_write:a COMA expresion:b   {: RESULT = a; RESULT.add(b); :}
+                    | expresion:a                           {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+;
+
+expresion::=  expresion:a SUMA:c expresion:b            {: RESULT = new Suma(a, b, aleft, bright); :}
+            | expresion:a MENOS expresion:b             {: RESULT = new Resta(a, b, aleft, bright); :}
+            | expresion:a MULTI expresion:b             {: RESULT = new Multiplicacion(a, b, aleft, bright); :}
+            | expresion:a DIVISION expresion:b          {: RESULT = new Division(a, b, aleft, bright); :}
+            | expresion:a DIV expresion:b               {: RESULT = new Division(a, b, aleft, bright); :}
+            | expresion:a MOD expresion:b               {: RESULT = new Modulo(a, b, aleft, bright); :}
+            | expresion:a IGUALACION expresion:b        {: RESULT = new Suma(a, b, aleft, bright); :}
+            | expresion:a DIFERENTE expresion:b         {: RESULT = new Suma(a, b, aleft, bright); :}
+            | expresion:a MAYOR expresion:b             {: RESULT = new Suma(a, b, aleft, bright); :}
+            | expresion:a MENOR expresion:b             {: RESULT = new Suma(a, b, aleft, bright); :}
+            | expresion:a MAYOR_IGUAL expresion:b       {: RESULT = new Suma(a, b, aleft, bright); :}
+            | expresion:a MENOR_IGUAL expresion:b       {: RESULT = new Suma(a, b, aleft, bright); :}
+            | expresion:a AND expresion:b               {: RESULT = new Suma(a, b, aleft, bright); :}
+            | expresion:a OR expresion:b                {: RESULT = new Suma(a, b, aleft, bright); :}
             | expresion:a AND THEN expresion:b
-            | expresion:a OR expresion:b
             | expresion:a OR ELSE expresion:b
+            | PAR_A expresion:a PAR_C                   {: RESULT = a; :}
             | NOT expresion:a
-            | MENOS expresion:a                     {: RESULT = a; :} %prec UNARIO
-            | valor:a                               {: RESULT = a; :}
+            | MENOS expresion:a                         {: RESULT = new Unario(a, aleft, aright); :} %prec UNARIO
+            | valor:a                                   {: RESULT = a; :}
 ;
 
 //public Terminal(Object value, Tipo tipo, int line, int col) {

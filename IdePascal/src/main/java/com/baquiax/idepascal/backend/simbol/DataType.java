@@ -9,7 +9,8 @@ public enum DataType {
     ARRAY("array"),
     RECORD("record"),
     SUBRANGO("sub-rango"),
-    ANY("any");
+    ANY("any"),
+    PERSONALIZADO("personalizado");
 
     public String nombre;
     DataType(String nombre){

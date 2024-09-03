@@ -54,7 +54,10 @@ public class SentenciaTipo extends Sentencia {
         switch (this.tipo.getDataType()) {
             case ENTERO, REAL, CADENA, CARACTER, BOOLEAN -> {
                 for (String id : ids) {
-                    Tipo tipo1 = new Tipo(id, this.tipo.getDataType());
+                    Tipo tipo1 = new Tipo();
+                    tipo1.setId(id);
+                    tipo1.setDataType(this.tipo.getDataType());
+                    tipo1.setTypeBase(this.tipo.getDataType());
                     if (!arbol.tipoAgregado(tipo1)) {
                         arbol.getErrores().add(new ErrorPascal(
                                 TipoError.SEMANTICO.name(),
@@ -115,6 +118,7 @@ public class SentenciaTipo extends Sentencia {
         }
         for (String id : ids) {
             Tipo tipoSubrango = new Tipo(id, DataType.SUBRANGO, indice1, indice2);
+            tipoSubrango.setTypeBase(DataType.ENTERO);
             if (!arbol.tipoAgregado(tipoSubrango)) {
                 arbol.getErrores().add(new ErrorPascal(
                         TipoError.SEMANTICO.name(),

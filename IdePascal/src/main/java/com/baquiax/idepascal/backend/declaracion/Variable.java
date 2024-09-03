@@ -109,6 +109,19 @@ public class Variable extends Sentencia {
                 return value;
             }
             DataType tipoExpresion = this.expresion.tipo.getDataType();
+
+            if(this.tipo.getDataType().equals(DataType.CARACTER) && tipoExpresion.equals(DataType.CADENA)){
+                String aux = value.toString();
+                if(aux.length() > 1){
+                    return new ErrorPascal(
+                            TipoError.SEMANTICO.name(),
+                            "No se puede mezclar '" + this.tipo.getDataType().nombre + "' con '" + tipoExpresion.nombre + "'.",
+                            this.expresion.line, this.expresion.col
+                    );
+                }
+                tipoExpresion = DataType.CARACTER;
+            }
+
             if (!tipoExpresion.equals(this.tipo.getDataType())) {
                 return new ErrorPascal(
                         TipoError.SEMANTICO.name(),
@@ -116,8 +129,10 @@ public class Variable extends Sentencia {
                         this.expresion.line, this.expresion.col
                 );
             }
+
         }
         for (String id : ids) {
+            this.tipo.setTypeBase(this.tipo.getDataType());
             Simbolo agregando = new Simbolo(id, this.tipo, value, false);
             if (!tableSimbols.agregarVariable(agregando, arbol)) {
                 arbol.getErrores().add(new ErrorPascal(
@@ -137,7 +152,11 @@ public class Variable extends Sentencia {
                     this.line, this.col);
         }
         for (String elementId : ids) {
-            Simbolo agregando = new Simbolo(elementId, this.id, getValueDefault(tipoBuscado.getDataType()), false);
+            Tipo tipo = new Tipo();
+            tipo.setDataType(DataType.PERSONALIZADO);
+            tipo.setTypeBase(tipoBuscado.getTypeBase());
+            Simbolo agregando = new Simbolo(elementId, tipo, getValueDefault(tipoBuscado.getTypeBase()), false);
+            agregando.setTipoPersonalizado(tipoBuscado.getId());
             if (!tableSimbols.agregarVariable(agregando, arbol)) {
                 arbol.getErrores().add(new ErrorPascal(
                         TipoError.SINTACTICO.name(),

@@ -32,7 +32,7 @@ ENTERO = [0-9]+
 DECIMAL = {ENTERO}"."{ENTERO}
 ID = [a-zA-Z][a-zA-Z0-9_]*
 CARACTER = \'.\'
-CADENA = \'.*\'
+CADENA = '([^'\n]|'')*'
 TRUE = "1"
 FALSE = "0"
 
@@ -151,8 +151,7 @@ FALSE = "0"
 }
 */
 <YYINITIAL> {CADENA} {
-    String auxi = yytext().substring(1, yytext().length() - 1);
-    return symbol(sym.CADENA, auxi); 
+    return symbol(sym.CADENA, yytext().substring(1, yytext().length() - 1));
 }
 
 <YYINITIAL>    {Comment}                       {/* ignoramos */}

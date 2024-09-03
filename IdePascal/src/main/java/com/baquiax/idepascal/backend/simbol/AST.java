@@ -19,7 +19,7 @@ public class AST {
 
     private String log;
 
-    public AST(List<Sentencia> sentecias){
+    public AST(List<Sentencia> sentecias) {
         this.sentecias = sentecias;
         this.errores = new ArrayList<>();
         this.global = new TableSimbols();
@@ -27,14 +27,15 @@ public class AST {
         this.records = new ArrayList<>();
         this.tablaTipos = new TableTypes();
         this.reporteSimbolos = new HashMap<>();
+        this.log = "";
     }
 
-    public boolean tipoAgregado(Tipo tipo){
+    public boolean tipoAgregado(Tipo tipo) {
         Tipo buscado = tablaTipos.getTipos().get(tipo.getId().toLowerCase());
-        if(buscado == null){
+        if (buscado == null) {
             tipo.setAmbito(global.getNombre());
             tablaTipos.getTipos().put(tipo.getId().toLowerCase(), tipo);
-            return  true;
+            return true;
         }
         return false;
     }
@@ -51,11 +52,11 @@ public class AST {
         return sentecias;
     }
 
-    public void setLog(String log){
-        this.log = log;
+    public void setLog(String log) {
+        this.log += log +"\n";
     }
 
-    public String getLog(){
+    public String getLog() {
         return log;
     }
 

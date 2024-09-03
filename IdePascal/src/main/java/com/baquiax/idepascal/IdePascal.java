@@ -45,12 +45,13 @@ public class IdePascal {
                     hola, weekdays : integer = 5;
                     taxrate, net_income: days;
                     choice, isready: boolean;
-                    initials, grade: char;
+                    initials, grade: char = 'A';
                     name1, surname : string;
                     arreglo1 : vector;
                     arreglo2 : array [1..10] of days;
-                    variable1 : 1...5;
+                    variable1 : a;
                     marks: 1 ... 100;
+                    writeln('hola mundo ',6,' esto es una coma : , ', 5, ' saludos Luis');
                 """;
         Lexer lexer = new Lexer(new StringReader(content));
         Parser parser = new Parser(lexer);
@@ -77,11 +78,13 @@ public class IdePascal {
                     System.out.println(element.getDescription());
                 });
             }
-          /*  Map<String, Tipo> map = ast.getTablaTipos().getTipos();
+            System.out.println("console \n" + ast.getLog());
+            System.out.println("tipos: ");
+            Map<String, Tipo> map = ast.getTablaTipos().getTipos();
             for (String key : map.keySet()) {
                 Tipo value = map.get(key);
                 System.out.println("Key = " + key + ", Value = " + value.toString());
-            }*/
+            }
             System.out.println("simbolos");
             Map<String, Object> map1 = ast.getReporteSimbolos();
             for (String key : map1.keySet()) {
