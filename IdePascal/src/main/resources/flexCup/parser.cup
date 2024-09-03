@@ -83,11 +83,11 @@ nonterminal DataType data_type, data_type_record;
 
 precedence left OR;
 precedence left AND;
-precedence right NOT;
+//precedence right NOT;
 precedence left IGUALACION, DIFERENTE, MENOR, MAYOR, MENOR_IGUAL, MAYOR_IGUAL;
 precedence left SUMA, MENOS;
 precedence left MULTI, DIVISION, DIV, MOD;
-precedence left UNARIO;
+precedence left UNARIO, NOT;
 
 start with inicio;
 
@@ -197,24 +197,24 @@ parametros_write::=   parametros_write:a COMA expresion:b   {: RESULT = a; RESUL
                     | expresion:a                           {: RESULT = new ArrayList<>(); RESULT.add(a); :}
 ;
 
-expresion::=  expresion:a SUMA:c expresion:b            {: RESULT = new Suma(a, b, aleft, bright); :}
-            | expresion:a MENOS expresion:b             {: RESULT = new Resta(a, b, aleft, bright); :}
-            | expresion:a MULTI expresion:b             {: RESULT = new Multiplicacion(a, b, aleft, bright); :}
-            | expresion:a DIVISION expresion:b          {: RESULT = new Division(a, b, aleft, bright); :}
-            | expresion:a DIV expresion:b               {: RESULT = new Division(a, b, aleft, bright); :}
-            | expresion:a MOD expresion:b               {: RESULT = new Modulo(a, b, aleft, bright); :}
-            | expresion:a IGUALACION expresion:b        {: RESULT = new Suma(a, b, aleft, bright); :}
-            | expresion:a DIFERENTE expresion:b         {: RESULT = new Suma(a, b, aleft, bright); :}
-            | expresion:a MAYOR expresion:b             {: RESULT = new Suma(a, b, aleft, bright); :}
-            | expresion:a MENOR expresion:b             {: RESULT = new Suma(a, b, aleft, bright); :}
-            | expresion:a MAYOR_IGUAL expresion:b       {: RESULT = new Suma(a, b, aleft, bright); :}
-            | expresion:a MENOR_IGUAL expresion:b       {: RESULT = new Suma(a, b, aleft, bright); :}
-            | expresion:a AND expresion:b               {: RESULT = new Suma(a, b, aleft, bright); :}
-            | expresion:a OR expresion:b                {: RESULT = new Suma(a, b, aleft, bright); :}
+expresion::=  expresion:a SUMA:c expresion:b            {: RESULT = new Suma(a, b, aleft, aright); :}
+            | expresion:a MENOS expresion:b             {: RESULT = new Resta(a, b, aleft, aright); :}
+            | expresion:a MULTI expresion:b             {: RESULT = new Multiplicacion(a, b, aleft, aright); :}
+            | expresion:a DIVISION expresion:b          {: RESULT = new Division(a, b, aleft, aright); :}
+            | expresion:a DIV expresion:b               {: RESULT = new Division(a, b, aleft, aright); :}
+            | expresion:a MOD expresion:b               {: RESULT = new Modulo(a, b, aleft, aright); :}
+            | expresion:a IGUALACION expresion:b        {: RESULT = new Igual(a, b, aleft, aright); :}
+            | expresion:a DIFERENTE expresion:b         {: RESULT = new Diferente(a, b, aleft, aright); :}
+            | expresion:a MAYOR expresion:b             {: RESULT = new Mayor(a, b, aleft, aright); :}
+            | expresion:a MENOR expresion:b             {: RESULT = new Menor(a, b, aleft, aright); :}
+            | expresion:a MAYOR_IGUAL expresion:b       {: RESULT = new MayorIgual(a, b, aleft, aright); :}
+            | expresion:a MENOR_IGUAL expresion:b       {: RESULT = new MenorIgual(a, b, aleft, aright); :}
+            | expresion:a AND expresion:b               {: RESULT = new And(a, b, aleft, aright); :}
+            | expresion:a OR expresion:b                {: RESULT = new OR(a, b, aleft, aright); :}
             | expresion:a AND THEN expresion:b
             | expresion:a OR ELSE expresion:b
             | PAR_A expresion:a PAR_C                   {: RESULT = a; :}
-            | NOT expresion:a
+            | NOT expresion:a                           {: RESULT = new NOT(a, aleft, aright); :}    %prec NOT
             | MENOS expresion:a                         {: RESULT = new Unario(a, aleft, aright); :} %prec UNARIO
             | valor:a                                   {: RESULT = a; :}
 ;

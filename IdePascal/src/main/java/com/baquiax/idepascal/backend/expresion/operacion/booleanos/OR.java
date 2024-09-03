@@ -8,28 +8,26 @@ import com.baquiax.idepascal.backend.simbol.TableSimbols;
 import com.baquiax.idepascal.backend.simbol.Tipo;
 import com.baquiax.idepascal.backend.stament.Sentencia;
 
-import java.util.Objects;
-
-public class And extends Sentencia {
+public class OR extends Sentencia {
 
     private Sentencia operandoDer;
     private Sentencia operandoIzq;
 
-    public And(Sentencia operandoIzq, Sentencia operandoDer, int line, int col) {
+    public OR(Sentencia operandoIzq, Sentencia operandoDer, int line, int col) {
         super(new Tipo(DataType.BOOLEAN), line, col);
-        this.operandoDer = operandoDer;
         this.operandoIzq = operandoIzq;
+        this.operandoDer = operandoDer;
     }
 
     @Override
     public Object analizar(AST arbol, TableSimbols tableSimbols) {
-        Object derecho = operandoDer.analizar(arbol, tableSimbols);
-        if (derecho instanceof ErrorPascal) {
-            return derecho;
-        }
-        Object izquierdo = operandoIzq.analizar(arbol, tableSimbols);
+        Object izquierdo = this.operandoIzq.analizar(arbol, tableSimbols);
         if (izquierdo instanceof ErrorPascal) {
             return izquierdo;
+        }
+        Object derecho = this.operandoDer.analizar(arbol, tableSimbols);
+        if (derecho instanceof ErrorPascal) {
+            return derecho;
         }
         return getResult(izquierdo, derecho);
     }
@@ -38,17 +36,17 @@ public class And extends Sentencia {
         DataType tipoIzq = this.operandoIzq.tipo.getDataType();
         DataType tipoDer = this.operandoDer.tipo.getDataType();
         if (tipoIzq.equals(DataType.BOOLEAN)) {
-            if (tipoDer.equals(DataType.BOOLEAN) ) {
-                return (Boolean.parseBoolean(valueIzq.toString()) && Boolean.parseBoolean(valueDer.toString()));
+            if (tipoDer.equals(DataType.BOOLEAN)) {
+                return (Boolean.parseBoolean(valueIzq.toString()) || Boolean.parseBoolean(valueDer.toString()));
             }
             return new ErrorPascal(
                     TipoError.SEMANTICO.name(),
-                    "relacional-and: Error semántico, expresión inválida. Se esperaba un BOOLEAN.",
+                    "relacional-or: Error semántico, expresión inválida. Se esperaba un BOOLEAN. valor: "+ valueDer,
                     this.operandoDer.line, this.operandoDer.col);
         }
         return new ErrorPascal(
                 TipoError.SEMANTICO.name(),
-                "relacional-and: Error semántico, expresión inválida. Se esperaba un BOOLEAN",
+                "relacional-or: Error semántico, expresión inválida. Se esperaba un BOOLEAN. valor: " + valueIzq,
                 this.operandoIzq.line, this.operandoIzq.col);
     }
 }

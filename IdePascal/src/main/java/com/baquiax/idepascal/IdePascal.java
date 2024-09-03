@@ -51,7 +51,7 @@ public class IdePascal {
                     arreglo2 : array [1..10] of days;
                     variable1 : a;
                     marks: 1 ... 100;
-                    writeln('hola mundo ',6,' esto es una coma : , ', 5, ' saludos Luis');
+                    writeln('resultado: ', not 0 * 20);
                 """;
         Lexer lexer = new Lexer(new StringReader(content));
         Parser parser = new Parser(lexer);
@@ -67,19 +67,19 @@ public class IdePascal {
                     continue;
                 }
                 var value = i.analizar(ast, tabla);
-                if (value instanceof ErrorPascal) {
-                    System.out.println("error pascal");
+                if (value instanceof ErrorPascal err) {
+                    ast.getErrores().add(err);
                 }
             }
             if (ast.getErrores().isEmpty()) {
                 System.out.println("todo bien");
             } else {
                 ast.getErrores().forEach(element -> {
-                    System.out.println(element.getDescription());
+                    System.out.println(element.getDescription()+ " linea "+ element.getRow() + " col: "+element.getCol());
                 });
             }
-            System.out.println("console \n" + ast.getLog());
-            System.out.println("tipos: ");
+            System.out.println("console:" + ast.getLog());
+            /*System.out.println("tipos: ");
             Map<String, Tipo> map = ast.getTablaTipos().getTipos();
             for (String key : map.keySet()) {
                 Tipo value = map.get(key);
@@ -90,7 +90,7 @@ public class IdePascal {
             for (String key : map1.keySet()) {
                 Simbolo value = (Simbolo) map1.get(key);
                 System.out.println(value.toString());
-            }
+            }*/
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -20,15 +20,15 @@ public class WriteLine extends Sentencia {
 
     @Override
     public Object analizar(AST arbol, TableSimbols tableSimbols) {
-        String aux = "";
+        StringBuilder aux = new StringBuilder();
         for (Sentencia ex : expresiones) {
             Object value = ex.analizar(arbol, tableSimbols);
             if (value instanceof ErrorPascal) {
                 return value;
             }
-            aux += value;
+            aux.append(value);
         }
-        arbol.setLog(aux.toString());
+        arbol.setLog(aux.toString().toString());
         return null;
     }
 }

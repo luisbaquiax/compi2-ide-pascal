@@ -45,11 +45,15 @@ public class Modulo extends Sentencia {
                     this.tipo.setDataType(DataType.ENTERO);
                     return (int) izquierdo % (int) derecho;
                 }
+                return new ErrorPascal(
+                        TipoError.SEMANTICO.name(),
+                        "arimética-mod: Expresion no válida, se esperaba un ENTERO.",
+                        this.operandoDer.line, this.operandoDer.col);
             }
             return new ErrorPascal(
                     TipoError.SEMANTICO.name(),
-                    "arimética-mod: Expresion no válida, se esperaba un ENTERO o REAL.",
-                    this.operandoDer.line, this.operandoDer.col);
+                    "arimética-mod: Expresion no válida, se esperaba un ENTERO.",
+                    this.operandoIzq.line, this.operandoIzq.col);
         }
     }
 }

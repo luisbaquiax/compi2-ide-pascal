@@ -32,49 +32,62 @@ public class Diferente extends Sentencia {
         return getResult(izquierdo, derecho);
     }
 
-    private Object getResult(Object izquierdo, Object derecho) {
-        DataType izq = this.operandoIzq.tipo.getDataType();
-        DataType der = this.operandoDer.tipo.getDataType();
-        switch (izq) {
+    private Object getResult(Object valueIzq, Object valueDer){
+        DataType tipoIzq = this.operandoIzq.tipo.getDataType();
+        DataType tipoDer = this.operandoDer.tipo.getDataType();
+        switch (tipoIzq){
             case ENTERO, REAL -> {
-                switch (der) {
-                    case ENTERO, REAL -> {
-                        return Double.parseDouble(izquierdo.toString()) != Double.parseDouble(derecho.toString());
+                switch (tipoDer){
+                    case ENTERO, REAL -> { return Double.parseDouble(valueIzq.toString()) != Double.parseDouble(valueDer.toString()); }
+                    case BOOLEAN -> {
+                        int auxi = Boolean.parseBoolean(valueDer.toString()) ? 1 : 0;
+                        return (int) valueIzq != auxi;
                     }
                     default -> {
                         return new ErrorPascal(
                                 TipoError.SEMANTICO.name(),
-                                "relacional-igual: Error semántico, expresión inválida. Se esperaba un ENTERO o REAL.",
+                                "relacional-dif: Error semántico, expresión inválida. Se esperaba un ENTERO, BOOLEAN, REAL.",
                                 this.operandoDer.line, this.operandoDer.col);
                     }
                 }
             }
             case CARACTER, CADENA -> {
-                switch (der) {
-                    case CARACTER, CADENA -> {
-                        return !izquierdo.equals(derecho);
-                    }
+                switch (tipoDer){
+                    case CARACTER, CADENA -> { return !valueIzq.equals(valueDer); }
                     default -> {
                         return new ErrorPascal(
                                 TipoError.SEMANTICO.name(),
-                                "relacional-diferente: Error semántico, expresión inválida. Se esperaba un CARACTER.",
+                                "relacional-dif: Error semántico, expresión inválida. Se esperaba un CARACTER.",
                                 this.operandoDer.line, this.operandoDer.col);
                     }
                 }
             }
             case BOOLEAN -> {
-                if(der.equals(DataType.BOOLEAN)){
-
+                int auxi = Boolean.parseBoolean(valueIzq.toString()) ? 1 : 0;
+                switch (tipoDer){
+                    case ENTERO, REAL -> {
+                        return  auxi != Double.parseDouble(valueDer.toString());
+                    }
+                    case BOOLEAN -> {
+                        int aux2 = Boolean.parseBoolean(valueDer.toString()) ? 1 : 0;
+                        return auxi != aux2;
+                    }
+                    case CARACTER -> {
+                        int aux = valueDer.toString().charAt(0);
+                        return auxi != aux;
+                    }
+                    default -> {
+                        return new ErrorPascal(
+                                TipoError.SEMANTICO.name(),
+                                "relacional-dif: Error semántico, expresión inválida.",
+                                this.operandoIzq.line, this.operandoIzq.col);
+                    }
                 }
-                return new ErrorPascal(
-                        TipoError.SEMANTICO.name(),
-                        "relacional-diferente: Error semántico, expresión inválida. Se esperaba un BOOLEANO.",
-                        this.operandoDer.line, this.operandoDer.col);
             }
             default -> {
                 return new ErrorPascal(
                         TipoError.SEMANTICO.name(),
-                        "relacional-diferente: Error semántico, expresión inválida.",
+                        "relacional-dif: Error semántico, expresión inválida.",
                         this.operandoIzq.line, this.operandoIzq.col);
             }
         }

@@ -31,8 +31,8 @@ public class Division extends Sentencia {
         return this.getResult(izq, der);
     }
 
-    private Object getResult(Object izquierdo, Object derecho){
-        if(derecho.toString().equals("0") || derecho.toString().equals("0.0")){
+    private Object getResult(Object valueIzq, Object valueDer){
+        if(valueDer.toString().equals("0") || valueDer.toString().equals("0.0") || valueDer.toString().equals("false")){
             return new ErrorPascal(
                     TipoError.SEMANTICO.name(),
                     "aritmética-division: No es permitido la divisón entre 0.",
@@ -43,8 +43,17 @@ public class Division extends Sentencia {
             switch (izq){
                 case ENTERO -> {
                     switch (der){
-                        case ENTERO -> { this.tipo.setDataType(DataType.ENTERO); return (int) izquierdo / (int) derecho; }
-                        case REAL -> { this.tipo.setDataType(DataType.REAL); return (int) izquierdo / (double) derecho; }
+                        case ENTERO -> { this.tipo.setDataType(DataType.ENTERO); return (int) valueIzq / (int) valueDer; }
+                        case REAL -> { this.tipo.setDataType(DataType.REAL); return (int) valueIzq / (double) valueDer; }
+                        case BOOLEAN -> {
+                            this.tipo.setDataType(DataType.ENTERO);
+                            return Integer.parseInt(valueIzq.toString());
+                        }
+                        case CARACTER -> {
+                            int auxi =  valueDer.toString().charAt(0);
+                            this.tipo.setDataType(DataType.ENTERO);
+                            return (int) valueIzq / auxi;
+                        }
                         default -> {
                             return new ErrorPascal(
                                     TipoError.SEMANTICO.name(),
@@ -54,13 +63,50 @@ public class Division extends Sentencia {
                     }
                 }
                 case REAL -> {
+                    this.tipo.setDataType(DataType.REAL);
                     switch (der){
-                        case ENTERO -> { this.tipo.setDataType(DataType.ENTERO); return (double) izquierdo / (int) derecho; }
-                        case REAL -> { this.tipo.setDataType(DataType.REAL); return (double) izquierdo / (double) derecho; }
+                        case ENTERO, REAL -> { return (double) valueIzq / (double) valueDer; }
+                        case BOOLEAN -> {
+                            int auxi = (Boolean.parseBoolean(valueDer.toString())) ? 1 : 0;
+                            return (double) valueIzq / auxi;
+                        }
+                        case CARACTER -> {
+                            int auxi =  valueDer.toString().charAt(0);
+                            return (double) valueIzq / auxi;
+                        }
                         default -> {
                             return new ErrorPascal(
                                     TipoError.SEMANTICO.name(),
                                     "aritmética-division: Expresion no válida, se esperaba un ENTERO o REAL.",
+                                    this.operandoDer.line, this.operandoDer.col);
+                        }
+                    }
+                }
+                case BOOLEAN -> {
+                    int auxi = Boolean.parseBoolean(valueIzq.toString()) ? 1 : 0;
+                    switch (der){
+                        case ENTERO -> {
+                            this.tipo.setDataType(DataType.ENTERO);
+                            return auxi / (int) valueDer;
+                        }
+                        case REAL -> {
+                            this.tipo.setDataType(DataType.REAL);
+                            return auxi / (double) valueDer;
+                        }
+                        case BOOLEAN -> {
+                            this.tipo.setDataType(DataType.ENTERO);
+                            int aux2 = 1;
+                            return auxi / aux2;
+                        }
+                        case CARACTER -> {
+                            int auxi2 = valueDer.toString().charAt(0);
+                            this.tipo.setDataType(DataType.ENTERO);
+                            return  auxi / auxi2;
+                        }
+                        default -> {
+                            return new ErrorPascal(
+                                    TipoError.SEMANTICO.name(),
+                                    "aritmética-suma: Expresion no válida, se esperaba un ENTERO, REAL, CHAR, STRING, BOOLEAN.",
                                     this.operandoDer.line, this.operandoDer.col);
                         }
                     }

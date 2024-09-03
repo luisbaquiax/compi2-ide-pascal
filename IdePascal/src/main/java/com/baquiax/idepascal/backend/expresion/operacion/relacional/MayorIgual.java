@@ -8,11 +8,12 @@ import com.baquiax.idepascal.backend.simbol.TableSimbols;
 import com.baquiax.idepascal.backend.simbol.Tipo;
 import com.baquiax.idepascal.backend.stament.Sentencia;
 
-public class Igual extends Sentencia {
+public class MayorIgual extends Sentencia {
+
     private Sentencia operandoDer;
     private Sentencia operandoIzq;
 
-    public Igual(Sentencia operandoIzq, Sentencia operandoDer, int line, int col) {
+    public MayorIgual(Sentencia operandoIzq, Sentencia operandoDer, int line, int col) {
         super(new Tipo(DataType.BOOLEAN), line, col);
         this.operandoDer = operandoDer;
         this.operandoIzq = operandoIzq;
@@ -37,26 +38,26 @@ public class Igual extends Sentencia {
         switch (tipoIzq){
             case ENTERO, REAL -> {
                 switch (tipoDer){
-                    case ENTERO, REAL -> { return Double.parseDouble(valueIzq.toString()) == Double.parseDouble(valueDer.toString()); }
+                    case ENTERO, REAL -> { return Double.parseDouble(valueIzq.toString()) >= Double.parseDouble(valueDer.toString()); }
                     case BOOLEAN -> {
                         int auxi = Boolean.parseBoolean(valueDer.toString()) ? 1 : 0;
-                        return (int) valueIzq == auxi;
+                        return (int) valueIzq >= auxi;
                     }
                     default -> {
                         return new ErrorPascal(
                                 TipoError.SEMANTICO.name(),
-                                "relacional-igual: Error semántico, expresión inválida. Se esperaba un ENTERO o REAL.",
+                                "relacional >=: Error semántico, expresión inválida. Se esperaba un ENTERO o REAL.",
                                 this.operandoDer.line, this.operandoDer.col);
                     }
                 }
             }
             case CARACTER, CADENA -> {
                 switch (tipoDer){
-                    case CARACTER, CADENA -> { return valueIzq.equals(valueDer); }
+                    case CARACTER, CADENA -> { return valueIzq.toString().length() >= valueDer.toString().length(); }
                     default -> {
                         return new ErrorPascal(
                                 TipoError.SEMANTICO.name(),
-                                "relacional-igual: Error semántico, expresión inválida. Se esperaba un CARACTER.",
+                                "relacional >= : Error semántico, expresión inválida. Se esperaba un CARACTER.",
                                 this.operandoDer.line, this.operandoDer.col);
                     }
                 }
@@ -65,20 +66,20 @@ public class Igual extends Sentencia {
                 int auxi = Boolean.parseBoolean(valueIzq.toString()) ? 1 : 0;
                 switch (tipoDer){
                     case ENTERO, REAL -> {
-                        return  auxi == Double.parseDouble(valueDer.toString());
+                        return  auxi >= Double.parseDouble(valueDer.toString());
                     }
                     case BOOLEAN -> {
                         int aux2 = Boolean.parseBoolean(valueDer.toString()) ? 1 : 0;
-                        return auxi == aux2;
+                        return auxi >= aux2;
                     }
                     case CARACTER -> {
                         int aux = valueDer.toString().charAt(0);
-                        return auxi == aux;
+                        return auxi >= aux;
                     }
                     default -> {
                         return new ErrorPascal(
                                 TipoError.SEMANTICO.name(),
-                                "relacional-igual: Error semántico, expresión inválida.",
+                                "relacional >=: Error semántico, expresión inválida.",
                                 this.operandoIzq.line, this.operandoIzq.col);
                     }
                 }
@@ -86,7 +87,7 @@ public class Igual extends Sentencia {
             default -> {
                 return new ErrorPascal(
                         TipoError.SEMANTICO.name(),
-                        "relacional-igual: Error semántico, expresión inválida.",
+                        "relacional >=: Error semántico, expresión inválida.",
                         this.operandoIzq.line, this.operandoIzq.col);
             }
         }
