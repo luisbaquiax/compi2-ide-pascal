@@ -45,7 +45,7 @@ public class IdePascal {
                     hola, weekdays : integer = 5;
                     taxrate, net_income: days;
                     choice, isready: boolean;
-                    initials, grade: char = 'A';
+                    initials, grade: char = 'b';
                     name1, surname : string;
                     arreglo1 : vector;
                     arreglo2 : array [1..10] of days;
