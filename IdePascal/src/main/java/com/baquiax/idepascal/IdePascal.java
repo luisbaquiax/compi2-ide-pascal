@@ -6,6 +6,9 @@ package com.baquiax.idepascal;
 
 import com.baquiax.idepascal.backend.Lexer;
 import com.baquiax.idepascal.backend.Parser;
+import com.baquiax.idepascal.backend.declaracion.DeclaracionConstante;
+import com.baquiax.idepascal.backend.declaracion.DeclaracionTipos;
+import com.baquiax.idepascal.backend.declaracion.DeclaracionVariable;
 import com.baquiax.idepascal.backend.errores.ErrorPascal;
 import com.baquiax.idepascal.backend.simbol.AST;
 import com.baquiax.idepascal.backend.simbol.Simbolo;
@@ -42,16 +45,11 @@ public class IdePascal {
                     PI = 3.141516;
                     HOLA_MUNDO = 'hola mundo';
                 var
-                    hola, weekdays : integer = 5;
-                    taxrate, net_income: days;
-                    choice, isready: boolean;
-                    initials, grade: char = 'b';
-                    name1, surname : string;
-                    arreglo1 : vector;
+                    arreglo1 : array [1..15] of char;
                     arreglo2 : array [1..10] of days;
                     variable1 : a;
-                    marks: 1 ... 100;
-                    writeln('resultado: ', not 0 * 20);
+                    var1 : vector;
+                    b : yes;
                 """;
         Lexer lexer = new Lexer(new StringReader(content));
         Parser parser = new Parser(lexer);
@@ -66,31 +64,31 @@ public class IdePascal {
                 if (i == null) {
                     continue;
                 }
-                var value = i.analizar(ast, tabla);
-                if (value instanceof ErrorPascal err) {
-                    ast.getErrores().add(err);
+                var det = i.analizar(ast, tabla);
+                if (det instanceof ErrorPascal e) {
+                    ast.getErrores().add(e);
                 }
             }
             if (ast.getErrores().isEmpty()) {
                 System.out.println("todo bien");
             } else {
                 ast.getErrores().forEach(element -> {
-                    System.out.println(element.getDescription()+ " linea "+ element.getRow() + " col: "+element.getCol());
+                    System.out.println(element.getDescription() + " linea " + element.getRow() + " col: " + element.getCol());
                 });
             }
             System.out.println("console:" + ast.getLog());
-            /*System.out.println("tipos: ");
+            System.out.println("tipos: ");
             Map<String, Tipo> map = ast.getTablaTipos().getTipos();
             for (String key : map.keySet()) {
                 Tipo value = map.get(key);
-                System.out.println("Key = " + key + ", Value = " + value.toString());
+                System.out.println("id: " + key + ", tipo: " + value.toString());
             }
             System.out.println("simbolos");
             Map<String, Object> map1 = ast.getReporteSimbolos();
             for (String key : map1.keySet()) {
                 Simbolo value = (Simbolo) map1.get(key);
                 System.out.println(value.toString());
-            }*/
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

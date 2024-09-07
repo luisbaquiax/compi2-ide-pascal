@@ -59,15 +59,17 @@ terminal String IDENTIFICADOR, ENTERO, DECIMAL, CADENA, TRUE, FALSE;
 //terminal CARCTER;
 
 //nonterminal
-nonterminal List<Sentencia> inicio, staments, inicial_sentencias, inicial_sentencia;
+nonterminal List<Sentencia> inicio, staments, inicial_sentencias, inicial_sentencia, sentencias;
 nonterminal List<Sentencia> body_sentencias, body_sentencia;
 nonterminal Sentencia stament;
+nonterminal Sentencia un_stament, un_stament_punto_coma;
 nonterminal Sentencia declaracion_tipos;
 nonterminal List<SentenciaTipo> tipos;
 nonterminal SentenciaTipo tipo;
 nonterminal Sentencia declaracion_contantes;
 nonterminal List<Constante> constantes;
 nonterminal Constante constante;
+//variables
 nonterminal Sentencia declaracion_variable;
 nonterminal List<Variable> variables;
 nonterminal Variable variable, variable_record;
@@ -78,6 +80,10 @@ nonterminal String id_variable;
 nonterminal Sentencia expresion;
 nonterminal List<Sentencia> parametros_write;
 nonterminal Sentencia llamada_funcion, writeline, readline;
+nonterminal Sentecnia asignacion;
+//sentencias
+nonterminal Sentencia sentencia_if;
+//expresiones
 nonterminal Sentencia valor;
 nonterminal DataType data_type, data_type_record;
 
@@ -118,8 +124,10 @@ inicial_sentencia::= declaracion_tipos
 stament::=    declaracion_tipos:a       {: RESULT = a; :}
             | declaracion_contantes:a   {: RESULT = a; :}
             | declaracion_variable:a    {: RESULT = a; :}
-            | writeline:a               {: RESULT = a; :}
-            | readline:a                {: RESULT = a; :}
+            | writeline:a PUNTO_COMA    {: RESULT = a; :}
+            | readline:a PUNTO_COMA     {: RESULT = a; :}
+            | asignacion:a              {: RESULT = a; :}
+            | sentencia_if:a            {: RESULT = a; :}
 ;
 
 declaracion_tipos::= TYPE tipos:a   {: RESULT = new DeclaracionTipos(a, aleft, aright); :}
@@ -187,10 +195,31 @@ ids_variables::=  ids_variables:a COMA id_variable:b    {: RESULT = a; RESULT.ad
 id_variable::= IDENTIFICADOR:a {: RESULT = a; :}
 ;
 
-writeline::= WRITELN:a PAR_A parametros_write:list PAR_C PUNTO_COMA {: RESULT = new WriteLine(list, aleft, aright); :}
+//asignacion de variables
+asignacion::= IDENTIFICADOR:a IGUAL expresion:e     {: RESULT = new Asignacion(a, e, aleft, aright); :}
 ;
 
-readline::= READLN:a PAR_A parametros_write:list PAR_C PUNTO_COMA {: RESULT = new Readline(list, aleft, aright); :}
+//sentencias
+
+sentencia_if::=   IF PAR_A expresion PAR_C THEN un_stament_punto_coma
+                //| IF PAR_A expresion PAR_C THEN un_stament ELSE BEGIN un_stament_punto_coma  END PUNTO_COMA
+;
+
+//sentencias
+un_stament::= writeline:a       {: RESULT = a; :}
+            | readline:a        {: RESULT = a; :}
+            | sentencia_if:a    {: RESULT = a; :}
+;
+
+un_stament_punto_coma::=  writeline:a PUNTO_COMA    {: RESULT = a; :}
+                        | readline:a  PUNTO_COMA    {: RESULT = a; :}
+;
+
+//funciones
+writeline::= WRITELN:a PAR_A parametros_write:list PAR_C {: RESULT = new WriteLine(list, aleft, aright); :}
+;
+
+readline::= READLN:a PAR_A parametros_write:list PAR_C {: RESULT = new Readline(list, aleft, aright); :}
 ;
 
 parametros_write::=   parametros_write:a COMA expresion:b   {: RESULT = a; RESULT.add(b); :}
