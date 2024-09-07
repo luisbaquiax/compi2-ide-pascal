@@ -127,7 +127,6 @@ stament::=    declaracion_tipos:a       {: RESULT = a; :}
             | writeline:a PUNTO_COMA    {: RESULT = a; :}
             | readline:a PUNTO_COMA     {: RESULT = a; :}
             | asignacion:a              {: RESULT = a; :}
-            | sentencia_if:a            {: RESULT = a; :}
 ;
 
 declaracion_tipos::= TYPE tipos:a   {: RESULT = new DeclaracionTipos(a, aleft, aright); :}
@@ -176,6 +175,7 @@ variable::=   ids_variables:ids DOS_PUNTOS data_type:a PUNTO_COMA
                 {: RESULT = new Variable(5, ids, e1, e2, id, idsleft, idsright); :}
 ;
 
+
 variable_record::= VAR:a IDENTIFICADOR:id DOS_PUNTOS RECORD atributos_record:b END PUNTO_COMA
 ;
 
@@ -200,7 +200,7 @@ asignacion::= IDENTIFICADOR:a IGUAL expresion:e     {: RESULT = new Asignacion(a
 ;
 
 //sentencias
-
+/*
 sentencia_if::=   IF PAR_A expresion PAR_C THEN un_stament_punto_coma
                 //| IF PAR_A expresion PAR_C THEN un_stament ELSE BEGIN un_stament_punto_coma  END PUNTO_COMA
 ;
@@ -214,7 +214,7 @@ un_stament::= writeline:a       {: RESULT = a; :}
 un_stament_punto_coma::=  writeline:a PUNTO_COMA    {: RESULT = a; :}
                         | readline:a  PUNTO_COMA    {: RESULT = a; :}
 ;
-
+*/
 //funciones
 writeline::= WRITELN:a PAR_A parametros_write:list PAR_C {: RESULT = new WriteLine(list, aleft, aright); :}
 ;

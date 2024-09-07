@@ -49,7 +49,9 @@ public class IdePascal {
                     arreglo2 : array [1..10] of days;
                     variable1 : a;
                     var1 : vector;
+                    var2: 1...2;
                     b : yes;
+                    
                 """;
         Lexer lexer = new Lexer(new StringReader(content));
         Parser parser = new Parser(lexer);

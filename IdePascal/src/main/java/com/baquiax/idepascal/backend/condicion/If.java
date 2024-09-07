@@ -1,6 +1,7 @@
 package com.baquiax.idepascal.backend.condicion;
 
 import com.baquiax.idepascal.backend.errores.ErrorPascal;
+import com.baquiax.idepascal.backend.errores.TipoError;
 import com.baquiax.idepascal.backend.simbol.AST;
 import com.baquiax.idepascal.backend.simbol.DataType;
 import com.baquiax.idepascal.backend.simbol.TableSimbols;
@@ -28,10 +29,14 @@ public class If extends Sentencia {
             return dataCondicion;
         }
         if (!this.condicion.tipo.getDataType().equals(DataType.BOOLEAN)) {
+            return new ErrorPascal(
+                    TipoError.SEMANTICO.name(),
+                    "La condicion es de tipo "+ DataType.BOOLEAN,
+                    this.condicion.line, this.condicion.col
+            );
         }
         if (this.instruccion != null) {
             TableSimbols entornoIf = new TableSimbols(tableSimbols);
-
             Object value = this.instruccion.analizar(arbol, entornoIf);
             if (value instanceof ErrorPascal) {
                 return value;

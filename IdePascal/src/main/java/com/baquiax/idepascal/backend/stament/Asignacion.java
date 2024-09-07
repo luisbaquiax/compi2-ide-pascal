@@ -48,6 +48,28 @@ public class Asignacion extends Sentencia {
         if (tipoSimbolo.equals(DataType.PERSONALIZADO)) {
             return getValuePersonalizado(value, arbol, tableSimbols, buscado);
         }
+        if (tipoSimbolo.equals(DataType.ARRAY)
+                || tipoSimbolo.equals(DataType.RECORD)) {
+            return new ErrorPascal(
+                    TipoError.SEMANTICO.name(),
+                    "No se puede asignar un expresion directamente a un tipo ARRAY o RECORD",
+                    this.line, this.col
+            );
+        }
+        if (tipoSimbolo.equals(DataType.SUBRANGO)) {
+            if (this.expresion.tipo.getDataType().equals(DataType.ENTERO)) {
+                int aux = (int) value;
+                int limiteInferior = buscado.getTipo().getIndiceMinimo();
+                int limiteSuperior = buscado.getTipo().getIndiceMaximo();
+                if (aux < limiteInferior || aux > limiteSuperior) {
+                    return new ErrorPascal(
+                            TipoError.SEMANTICO.name(),
+                            "El sub-rango '" + this.id + "' solo adminte valores entre: " + limiteInferior + " y " + limiteSuperior,
+                            this.line, this.col
+                    );
+                }
+            }
+        }
         if (!this.expresion.tipo.getDataType().equals(tipoSimbolo)) {
             return new ErrorPascal(
                     TipoError.SEMANTICO.name(),

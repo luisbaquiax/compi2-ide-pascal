@@ -202,7 +202,7 @@ public class Variable extends Sentencia {
         }
         if (superior < inferior) {
             return new ErrorPascal(TipoError.SINTACTICO.name(),
-                    "El límite superior '" + value2 + "' debe ser mayor que el limite inferior '" + value1 + "'.",
+                    "El límite superior '" + superior + "' debe ser mayor que el limite inferior '" + inferior + "'.",
                     this.limite1.line, this.limite1.col);
         }
 
@@ -244,12 +244,12 @@ public class Variable extends Sentencia {
         }
         if (indice1 < 0) {
             return new ErrorPascal(TipoError.SINTACTICO.name(),
-                    "El límite inferior '" + value1 + "' debe ser mayor o igual a 0.",
+                    "El límite inferior '" + indice1 + "' debe ser mayor o igual a 0.",
                     this.limite1.line, this.limite1.col);
         }
         if (indice2 < indice1) {
             return new ErrorPascal(TipoError.SINTACTICO.name(),
-                    "El límite superior '" + value2 + "' debe ser mayor que el limite inferior '" + value1 + "'.",
+                    "El límite superior '" + indice2 + "' debe ser mayor que el limite inferior '" + indice1 + "'.",
                     this.limite1.line, this.limite1.col);
         }
 
@@ -291,12 +291,12 @@ public class Variable extends Sentencia {
         }
         if (indice1 < 0) {
             return new ErrorPascal(TipoError.SINTACTICO.name(),
-                    "El límite inferior '" + value1 + "' debe ser mayor o igual a 0.",
+                    "El límite inferior '" + indice1 + "' debe ser mayor o igual a 0.",
                     this.limite1.line, this.limite1.col);
         }
         if (indice2 < indice1) {
             return new ErrorPascal(TipoError.SINTACTICO.name(),
-                    "El límite superior '" + value2 + "' debe ser mayor que el limite inferior '" + value1 + "'.",
+                    "El límite superior '" + indice2 + "' debe ser mayor que el limite inferior '" + indice1 + "'.",
                     this.limite1.line, this.limite1.col);
         }
         Tipo tipoArray = arbol.getTablaTipos().getTipos().get(this.id.toLowerCase());
