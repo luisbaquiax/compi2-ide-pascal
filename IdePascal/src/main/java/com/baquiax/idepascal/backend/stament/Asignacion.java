@@ -70,7 +70,7 @@ public class Asignacion extends Sentencia {
                 }
             }
         }
-        if (!this.expresion.tipo.getDataType().equals(tipoSimbolo)) {
+        if (!this.expresion.tipo.getDataType().equals(buscado.getTipo().getTypeBase())) {
             return new ErrorPascal(
                     TipoError.SEMANTICO.name(),
                     "No se puede asignar un '" + this.expresion.tipo.getDataType()

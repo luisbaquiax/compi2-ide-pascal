@@ -133,7 +133,7 @@ public class Variable extends Sentencia {
         }
         for (String id : ids) {
             this.tipo.setTypeBase(this.tipo.getDataType());
-            Simbolo agregando = new Simbolo(id, this.tipo, value, false);
+            Simbolo agregando = new Simbolo(id, this.tipo, value, true);
             if (!tableSimbols.agregarVariable(agregando, arbol)) {
                 arbol.getErrores().add(new ErrorPascal(
                         TipoError.SEMANTICO.name(),
@@ -155,7 +155,7 @@ public class Variable extends Sentencia {
             Tipo tipo = new Tipo();
             tipo.setDataType(DataType.PERSONALIZADO);
             tipo.setTypeBase(tipoBuscado.getTypeBase());
-            Simbolo agregando = new Simbolo(elementId, tipo, getValueDefault(tipoBuscado.getTypeBase()), false);
+            Simbolo agregando = new Simbolo(elementId, tipo, getValueDefault(tipoBuscado.getTypeBase()), true);
             agregando.setTipoPersonalizado(tipoBuscado.getId());
             if (!tableSimbols.agregarVariable(agregando, arbol)) {
                 arbol.getErrores().add(new ErrorPascal(
@@ -208,7 +208,7 @@ public class Variable extends Sentencia {
 
         for (String subs : ids) {
             Tipo tipo = new Tipo(subs, DataType.SUBRANGO, DataType.ENTERO, inferior, superior);
-            Simbolo subrango = new Simbolo(subs, tipo, inferior, false);
+            Simbolo subrango = new Simbolo(subs, tipo, inferior, true);
             if (!tableSimbols.agregarVariable(subrango, arbol)) {
                 arbol.getErrores().add(new ErrorPascal(
                         TipoError.SINTACTICO.name(),
@@ -312,7 +312,7 @@ public class Variable extends Sentencia {
             tipo.setIndiceMinimo(indice1);
             tipo.setIndiceMaximo(indice2);
 
-            Simbolo arreglo = new Simbolo(i, tipo, null, false);
+            Simbolo arreglo = new Simbolo(i, tipo, null, true);
             arreglo.setTipoPersonalizado(this.id);
             if (!tableSimbols.agregarVariable(arreglo, arbol)) {
                 arbol.getErrores().add(

@@ -51,7 +51,11 @@ public class IdePascal {
                     var1 : vector;
                     var2: 1...2;
                     b : yes;
-                    
+                    var3: integer;
+                BEGIN
+                    var1:= 2;
+                    writeln('resultado ',' de la suma: ',5+5);
+                END .   
                 """;
         Lexer lexer = new Lexer(new StringReader(content));
         Parser parser = new Parser(lexer);
@@ -78,7 +82,6 @@ public class IdePascal {
                     System.out.println(element.getDescription() + " linea " + element.getRow() + " col: " + element.getCol());
                 });
             }
-            System.out.println("console:" + ast.getLog());
             System.out.println("tipos: ");
             Map<String, Tipo> map = ast.getTablaTipos().getTipos();
             for (String key : map.keySet()) {
@@ -91,6 +94,7 @@ public class IdePascal {
                 Simbolo value = (Simbolo) map1.get(key);
                 System.out.println(value.toString());
             }
+            System.out.println("console:" + ast.getLog());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

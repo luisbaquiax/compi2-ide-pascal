@@ -60,8 +60,8 @@ terminal String IDENTIFICADOR, ENTERO, DECIMAL, CADENA, TRUE, FALSE;
 
 //nonterminal
 nonterminal List<Sentencia> inicio, staments, inicial_sentencias, inicial_sentencia, sentencias;
-nonterminal List<Sentencia> body_sentencias, body_sentencia;
-nonterminal Sentencia stament;
+nonterminal List<Sentencia> programa_principal;
+nonterminal Sentencia stament, stament_program;
 nonterminal Sentencia un_stament, un_stament_punto_coma;
 nonterminal Sentencia declaracion_tipos;
 nonterminal List<SentenciaTipo> tipos;
@@ -80,7 +80,7 @@ nonterminal String id_variable;
 nonterminal Sentencia expresion;
 nonterminal List<Sentencia> parametros_write;
 nonterminal Sentencia llamada_funcion, writeline, readline;
-nonterminal Sentecnia asignacion;
+nonterminal Sentencia asignacion;
 //sentencias
 nonterminal Sentencia sentencia_if;
 //expresiones
@@ -100,33 +100,23 @@ start with inicio;
 inicio::= staments:a {: RESULT = a; :}
 ;
 
-/*
-staments::=  staments:a stament:b {: RESULT = a; RESULT.add(b);  :}
-                | stament:a {: RESULT = new LinkedList<>(); RESULT.add(a); :}
-;
-stament::=    declaracion:a PUNTO_COMA {: RESULT = a; :}
-                | instancia_struct:a PUNTO_COMA {: RESULT = a; :}
-;
-*/
 staments::=   staments:a stament:b  {: RESULT = a; RESULT.add(b); :}
             | stament:a  {: RESULT = new ArrayList<>(); RESULT.add(a); :}
 ;
-/*
-stament::=   PROGRAM IDENTIFICADOR inicial_sentencias BEGIN body_sentencias END PUNTO
-;
-inicial_sentencias::=    inicial_sentencias inicial_sentencia
-                    |   inicial_sentencia
-;
-inicial_sentencia::= declaracion_tipos
-;
-*/
 
 stament::=    declaracion_tipos:a       {: RESULT = a; :}
             | declaracion_contantes:a   {: RESULT = a; :}
             | declaracion_variable:a    {: RESULT = a; :}
-            | writeline:a PUNTO_COMA    {: RESULT = a; :}
-            | readline:a PUNTO_COMA     {: RESULT = a; :}
-            | asignacion:a              {: RESULT = a; :}
+            | BEGIN programa_principal:a END PUNTO     {: RESULT = new ProgramaPrincipal(a, aleft, aright); :}
+;
+
+programa_principal::= programa_principal:a stament_program:b    {: RESULT = a; RESULT.add(b); :}
+                    | stament_program:a                         {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+;
+
+stament_program::=    writeline:a PUNTO_COMA    {: RESULT = a; :}
+                    | readline:a PUNTO_COMA     {: RESULT = a; :}
+                    | asignacion:a PUNTO_COMA   {: RESULT = a; :}
 ;
 
 declaracion_tipos::= TYPE tipos:a   {: RESULT = new DeclaracionTipos(a, aleft, aright); :}

@@ -1,5 +1,6 @@
 package com.baquiax.idepascal.backend.funcion;
 
+import com.baquiax.idepascal.backend.errores.ErrorPascal;
 import com.baquiax.idepascal.backend.simbol.AST;
 import com.baquiax.idepascal.backend.simbol.DataType;
 import com.baquiax.idepascal.backend.simbol.TableSimbols;
@@ -23,7 +24,9 @@ public class ProgramaPrincipal extends Sentencia {
 
         for (Sentencia sentencia: sentencias) {
             var value = sentencia.analizar(arbol, tableSimbols);
-
+            if(value instanceof ErrorPascal e){
+                arbol.getErrores().add(e);
+            }
         }
         return null;
     }
