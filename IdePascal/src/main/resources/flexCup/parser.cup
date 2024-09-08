@@ -63,6 +63,8 @@ terminal String IDENTIFICADOR, ENTERO, DECIMAL, CADENA, TRUE, FALSE;
 nonterminal List<Sentencia> inicio, staments, inicial_sentencias, inicial_sentencia;
 nonterminal List<Sentencia> bloque_codigo;
 nonterminal Sentencia stament, stament_bloque, setencia_case;
+nonterminal List<Caso> casos;
+nonterminal Caso caso;
 nonterminal Sentencia un_stament, un_stament_punto_coma;
 nonterminal Sentencia declaracion_tipos;
 nonterminal List<SentenciaTipo> tipos;
@@ -117,11 +119,21 @@ bloque_codigo::= bloque_codigo:a stament_bloque:b    {: RESULT = a; RESULT.add(b
                     | stament_bloque:a                         {: RESULT = new ArrayList<>(); RESULT.add(a); :}
 ;
 
-stament_bloque::=     writeline:a PUNTO_COMA    {: RESULT = a; :}
+stament_bloque::=   /*  writeline:a PUNTO_COMA    {: RESULT = a; :}
                     | readline:a PUNTO_COMA     {: RESULT = a; :}
                     | asignacion:a PUNTO_COMA   {: RESULT = a; :}
                     | sentencia_if:a PUNTO_COMA            {: RESULT = a; :}
+                    | setencia_case:a PUNTO_COMA {: RESULT = a; :}*/
+                    un_stament:a PUNTO_COMA     {: RESULT = a; :}
 ;
+
+un_stament::= writeline:a       {: RESULT = a; :}
+            | readline:a        {: RESULT = a; :}
+            | asignacion:a      {: RESULT = a; :}
+            | sentencia_if:a    {: RESULT = a; :}
+            | setencia_case:a   {: RESULT = a; :}
+;
+
 
 declaracion_tipos::= TYPE tipos:a   {: RESULT = new DeclaracionTipos(a, aleft, aright); :}
 ;
@@ -169,7 +181,7 @@ variable::=   ids_variables:ids DOS_PUNTOS data_type:a PUNTO_COMA
                 {: RESULT = new Variable(5, ids, e1, e2, id, idsleft, idsright); :}
 ;
 
-
+//variable record
 variable_record::= VAR:a IDENTIFICADOR:id DOS_PUNTOS RECORD atributos_record:b END PUNTO_COMA
 ;
 
@@ -204,11 +216,22 @@ sentencia_if::=   IF:i PAR_A expresion:a PAR_C THEN un_stament:b {: RESULT = new
                     {: RESULT = new If(a, new BloqueCodigo(b, bleft, bright), new BloqueCodigo(c, cleft, cright), ileft, iright); :}
 ;
 
-un_stament::= writeline:a       {: RESULT = a; :}
-            | readline:a        {: RESULT = a; :}
-            | asignacion:a      {: RESULT = a; :}
-            | sentencia_if:a    {: RESULT = a; :}
+setencia_case::=  CASE:i PAR_A expresion:a PAR_C OF casos:b ELSE stament_bloque:c END
+                    {: RESULT = new SentenciaCase(a, b, new Caso(null, c, cleft, cright), ileft, iright); :}
+                | CASE:i PAR_A expresion:a PAR_C OF casos:b ELSE BEGIN bloque_codigo:c END PUNTO_COMA END
+                    {: RESULT = new SentenciaCase(a, b, new Caso(null, c, cleft, cright), ileft, iright); :}
+                | CASE:i PAR_A expresion:a PAR_C OF casos:b END
+                     {: RESULT = new SentenciaCase(a, b, null, ileft, iright); :}
 ;
+
+casos::=  casos:a caso:b    {: RESULT = a; RESULT.add(b); :}
+        | caso:a            {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+;
+
+caso::=   expresion:a DOS_PUNTOS stament_bloque:b                       {: RESULT = new Caso(a, b, aleft, aright); :}
+        | expresion:a DOS_PUNTOS BEGIN bloque_codigo:b END PUNTO_COMA   {: RESULT = new Caso(a, b, aleft, aright); :}
+;
+
 
 //funciones
 writeline::= WRITELN:a PAR_A parametros_write:list PAR_C {: RESULT = new WriteLine(list, aleft, aright); :}

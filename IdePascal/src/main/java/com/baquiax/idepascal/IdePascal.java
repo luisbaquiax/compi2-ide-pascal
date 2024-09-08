@@ -51,6 +51,39 @@ public class IdePascal {
                 BEGIN
                     var1:= 2;
                     writeln('d',' de la suma: ',5+5);
+                    case ('B') of
+                          'A' :
+                            begin
+                                writeln('Excellent!' );
+                                writeln('Excellent!' );
+                            end;
+                          'B': if(1) then
+                                case ('B') of
+                                  'A' :
+                                    begin
+                                        writeln('Excellent!' );
+                                        writeln('Excellent!' );
+                                    end;
+                                  'B': if(1) then
+                                        writeln('hola interior');
+                                  'C': writeln('es la C' );
+                                  'D' : writeln('You passed' );
+                            
+                                   else
+                                      begin
+                                        writeln('CASO POR DEFECTO' );
+                                        writeln('CASO POR DEFECTO' );
+                                      end;
+                        end;
+                          'C': writeln('es la C' );
+                          'D' : writeln('You passed' );
+                    
+                       else
+                          begin
+                            writeln('CASO POR DEFECTO' );
+                            writeln('CASO POR DEFECTO' );
+                          end;
+                        end;
                 END .   
                 """;
         Lexer lexer = new Lexer(new StringReader(content));
@@ -92,6 +125,7 @@ public class IdePascal {
             }
             System.out.println("console:" + ast.getLog());
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
     }
