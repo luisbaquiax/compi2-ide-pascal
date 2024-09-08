@@ -15,5 +15,5 @@ public abstract class Sentencia {
         this.col = col;
     }
 
-    public abstract Object analizar(AST arbol, TableSimbols tableSimbols);
+    public abstract Object interpretar(AST arbol, TableSimbols tableSimbols);
 }

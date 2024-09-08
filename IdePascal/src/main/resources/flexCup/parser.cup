@@ -19,6 +19,7 @@ import com.baquiax.idepascal.backend.expresion.operacion.booleanos.*;
 import com.baquiax.idepascal.backend.expresion.operacion.relacional.*;
 //declaraciones
 import com.baquiax.idepascal.backend.declaracion.*;
+import com.baquiax.idepascal.backend.sentencias.*;
 //funciones
 import com.baquiax.idepascal.backend.funcion.*;
 //simbol
@@ -33,12 +34,12 @@ parser code {:
     public List<ErrorPascal> listaErrores = new ArrayList<>();
 
     public void syntax_error(Symbol s) {
-            String description = "No se esperaba el componente: " + (s.value) + "." +s.left +" "+s.right;
+            String description = "No se esperaba el componente: " + (s.value) + " lin,col: " +s.left +" "+s.right;
             System.out.println(description);
             listaErrores.add(new ErrorPascal(TipoError.SEMANTICO.name(), description, s.left, s.right));
     }
     public void unrecovered_syntax_error(Symbol s) {
-            String description = "No se esperaba el componente: " + (s.value) + ".";
+            String description = "No se esperaba el componente: " + (s.value);
             System.out.println(description);
             listaErrores.add(new ErrorPascal(TipoError.SEMANTICO.name(), description, s.left, s.right));
     }
@@ -59,9 +60,9 @@ terminal String IDENTIFICADOR, ENTERO, DECIMAL, CADENA, TRUE, FALSE;
 //terminal CARCTER;
 
 //nonterminal
-nonterminal List<Sentencia> inicio, staments, inicial_sentencias, inicial_sentencia, sentencias;
-nonterminal List<Sentencia> programa_principal;
-nonterminal Sentencia stament, stament_program;
+nonterminal List<Sentencia> inicio, staments, inicial_sentencias, inicial_sentencia;
+nonterminal List<Sentencia> bloque_codigo;
+nonterminal Sentencia stament, stament_bloque, setencia_case;
 nonterminal Sentencia un_stament, un_stament_punto_coma;
 nonterminal Sentencia declaracion_tipos;
 nonterminal List<SentenciaTipo> tipos;
@@ -81,8 +82,8 @@ nonterminal Sentencia expresion;
 nonterminal List<Sentencia> parametros_write;
 nonterminal Sentencia llamada_funcion, writeline, readline;
 nonterminal Sentencia asignacion;
-//sentencias
-nonterminal Sentencia sentencia_if;
+//sentencias, ciclos
+nonterminal Sentencia sentencia_if, sentencia_while;
 //expresiones
 nonterminal Sentencia valor;
 nonterminal DataType data_type, data_type_record;
@@ -94,6 +95,8 @@ precedence left IGUALACION, DIFERENTE, MENOR, MAYOR, MENOR_IGUAL, MAYOR_IGUAL;
 precedence left SUMA, MENOS;
 precedence left MULTI, DIVISION, DIV, MOD;
 precedence left UNARIO, NOT;
+
+precedence left ELSE;
 
 start with inicio;
 
@@ -107,16 +110,17 @@ staments::=   staments:a stament:b  {: RESULT = a; RESULT.add(b); :}
 stament::=    declaracion_tipos:a       {: RESULT = a; :}
             | declaracion_contantes:a   {: RESULT = a; :}
             | declaracion_variable:a    {: RESULT = a; :}
-            | BEGIN programa_principal:a END PUNTO     {: RESULT = new ProgramaPrincipal(a, aleft, aright); :}
+            | BEGIN bloque_codigo:a END PUNTO     {: RESULT = new ProgramaPrincipal(a, aleft, aright); :}
 ;
 
-programa_principal::= programa_principal:a stament_program:b    {: RESULT = a; RESULT.add(b); :}
-                    | stament_program:a                         {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+bloque_codigo::= bloque_codigo:a stament_bloque:b    {: RESULT = a; RESULT.add(b); :}
+                    | stament_bloque:a                         {: RESULT = new ArrayList<>(); RESULT.add(a); :}
 ;
 
-stament_program::=    writeline:a PUNTO_COMA    {: RESULT = a; :}
+stament_bloque::=     writeline:a PUNTO_COMA    {: RESULT = a; :}
                     | readline:a PUNTO_COMA     {: RESULT = a; :}
                     | asignacion:a PUNTO_COMA   {: RESULT = a; :}
+                    | sentencia_if:a PUNTO_COMA            {: RESULT = a; :}
 ;
 
 declaracion_tipos::= TYPE tipos:a   {: RESULT = new DeclaracionTipos(a, aleft, aright); :}
@@ -190,21 +194,22 @@ asignacion::= IDENTIFICADOR:a IGUAL expresion:e     {: RESULT = new Asignacion(a
 ;
 
 //sentencias
-/*
-sentencia_if::=   IF PAR_A expresion PAR_C THEN un_stament_punto_coma
-                //| IF PAR_A expresion PAR_C THEN un_stament ELSE BEGIN un_stament_punto_coma  END PUNTO_COMA
+
+sentencia_if::=   IF:i PAR_A expresion:a PAR_C THEN un_stament:b {: RESULT = new If(a, b, null, ileft, iright); :}
+                | IF:i PAR_A expresion:a PAR_C THEN BEGIN bloque_codigo:b END {: RESULT = new If(a, new BloqueCodigo(b, bleft, bright), ileft, iright); :}
+                | IF:i PAR_A expresion:a PAR_C THEN un_stament:b ELSE un_stament:c {: RESULT = new If(a, b, c, ileft, iright); :}
+                | IF:i PAR_A expresion:a PAR_C THEN un_stament:b ELSE BEGIN bloque_codigo:c END {: RESULT = new If(a, b, new BloqueCodigo(c, cleft, cright), ileft, iright); :}
+                | IF:i PAR_A expresion:a PAR_C THEN BEGIN bloque_codigo:b END ELSE un_stament:c {: RESULT = new If(a, new BloqueCodigo(b, bleft, bright), c, ileft, iright); :}
+                | IF:i PAR_A expresion:a PAR_C THEN BEGIN bloque_codigo:b END ELSE BEGIN bloque_codigo:c END
+                    {: RESULT = new If(a, new BloqueCodigo(b, bleft, bright), new BloqueCodigo(c, cleft, cright), ileft, iright); :}
 ;
 
-//sentencias
 un_stament::= writeline:a       {: RESULT = a; :}
             | readline:a        {: RESULT = a; :}
+            | asignacion:a      {: RESULT = a; :}
             | sentencia_if:a    {: RESULT = a; :}
 ;
 
-un_stament_punto_coma::=  writeline:a PUNTO_COMA    {: RESULT = a; :}
-                        | readline:a  PUNTO_COMA    {: RESULT = a; :}
-;
-*/
 //funciones
 writeline::= WRITELN:a PAR_A parametros_write:list PAR_C {: RESULT = new WriteLine(list, aleft, aright); :}
 ;

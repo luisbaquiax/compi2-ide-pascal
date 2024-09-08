@@ -15,7 +15,7 @@ public class Terminal extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         return this.value;
     }
 }

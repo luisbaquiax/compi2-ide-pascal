@@ -10,7 +10,7 @@ public class Acceso extends Sentencia{
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         return null;
     }
 }

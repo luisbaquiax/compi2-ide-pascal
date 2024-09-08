@@ -18,9 +18,9 @@ public class Readline extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         for(Sentencia ex: expresiones){
-            var value = ex.analizar(arbol, tableSimbols);
+            var value = ex.interpretar(arbol, tableSimbols);
             if(value instanceof ErrorPascal){
                 return value;
             }

@@ -19,12 +19,12 @@ public class Division extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
-        Object izq = this.operandoIzq.analizar(arbol, tableSimbols);
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
+        Object izq = this.operandoIzq.interpretar(arbol, tableSimbols);
         if(izq instanceof ErrorPascal){
             return izq;
         }
-        Object der = this.operandoDer.analizar(arbol, tableSimbols);
+        Object der = this.operandoDer.interpretar(arbol, tableSimbols);
         if(der instanceof ErrorPascal){
             return der;
         }

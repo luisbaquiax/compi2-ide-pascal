@@ -18,8 +18,8 @@ public class Constante extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
-        Object value = this.expresion.analizar(arbol, tableSimbols);
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
+        Object value = this.expresion.interpretar(arbol, tableSimbols);
         if (value instanceof ErrorPascal) {
             return value;
         }

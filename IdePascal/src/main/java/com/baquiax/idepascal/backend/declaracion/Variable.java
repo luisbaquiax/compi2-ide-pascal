@@ -72,7 +72,7 @@ public class Variable extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         switch (parametro) {
             case 1 -> {
                 return this.declararVariablePrimitiva(arbol, tableSimbols);
@@ -104,7 +104,7 @@ public class Variable extends Sentencia {
         if (this.expresion == null) {
             value = getValueDefault(this.tipo.getDataType());
         } else {
-            value = this.expresion.analizar(arbol, tableSimbols);
+            value = this.expresion.interpretar(arbol, tableSimbols);
             if (value instanceof ErrorPascal) {
                 return value;
             }
@@ -169,11 +169,11 @@ public class Variable extends Sentencia {
     }
 
     private Object declararVariableSubrango(AST arbol, TableSimbols tableSimbols) {
-        Object value1 = this.limite1.analizar(arbol, tableSimbols);
+        Object value1 = this.limite1.interpretar(arbol, tableSimbols);
         if (value1 instanceof ErrorPascal) {
             return value1;
         }
-        Object value2 = this.limite2.analizar(arbol, tableSimbols);
+        Object value2 = this.limite2.interpretar(arbol, tableSimbols);
         if (value2 instanceof ErrorPascal) {
             return value2;
         }
@@ -222,11 +222,11 @@ public class Variable extends Sentencia {
     }
 
     private Object declararArray(AST arbol, TableSimbols tableSimbols) {
-        Object value1 = this.limite1.analizar(arbol, tableSimbols);
+        Object value1 = this.limite1.interpretar(arbol, tableSimbols);
         if (value1 instanceof ErrorPascal) {
             return value1;
         }
-        Object value2 = this.limite2.analizar(arbol, tableSimbols);
+        Object value2 = this.limite2.interpretar(arbol, tableSimbols);
         if (value2 instanceof ErrorPascal) {
             return value2;
         }
@@ -269,11 +269,11 @@ public class Variable extends Sentencia {
     }
 
     private Object declararArrayOtroTipo(AST arbol, TableSimbols tableSimbols) {
-        Object value1 = this.limite1.analizar(arbol, tableSimbols);
+        Object value1 = this.limite1.interpretar(arbol, tableSimbols);
         if (value1 instanceof ErrorPascal) {
             return value1;
         }
-        Object value2 = this.limite2.analizar(arbol, tableSimbols);
+        Object value2 = this.limite2.interpretar(arbol, tableSimbols);
         if (value2 instanceof ErrorPascal) {
             return value2;
         }
@@ -328,7 +328,7 @@ public class Variable extends Sentencia {
 
     private Object declararRecord(AST arbol, TableSimbols tableSimbols) {
         for (AtributoRecord list : atributosRecord) {
-            Object value = list.analizar(arbol, tableSimbols);
+            Object value = list.interpretar(arbol, tableSimbols);
             if (value instanceof ErrorPascal errorPascal) {
                 arbol.getErrores().add(errorPascal);
             }

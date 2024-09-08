@@ -8,8 +8,6 @@ import com.baquiax.idepascal.backend.simbol.TableSimbols;
 import com.baquiax.idepascal.backend.simbol.Tipo;
 import com.baquiax.idepascal.backend.stament.Sentencia;
 
-import java.util.Objects;
-
 public class And extends Sentencia {
 
     private Sentencia operandoDer;
@@ -22,12 +20,12 @@ public class And extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
-        Object derecho = operandoDer.analizar(arbol, tableSimbols);
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
+        Object derecho = operandoDer.interpretar(arbol, tableSimbols);
         if (derecho instanceof ErrorPascal) {
             return derecho;
         }
-        Object izquierdo = operandoIzq.analizar(arbol, tableSimbols);
+        Object izquierdo = operandoIzq.interpretar(arbol, tableSimbols);
         if (izquierdo instanceof ErrorPascal) {
             return izquierdo;
         }

@@ -20,12 +20,12 @@ public class Diferente extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
-        Object derecho = operandoDer.analizar(arbol, tableSimbols);
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
+        Object derecho = operandoDer.interpretar(arbol, tableSimbols);
         if(derecho instanceof ErrorPascal){
             return derecho;
         }
-        Object izquierdo = operandoIzq.analizar(arbol, tableSimbols);
+        Object izquierdo = operandoIzq.interpretar(arbol, tableSimbols);
         if(izquierdo instanceof ErrorPascal){
             return izquierdo;
         }

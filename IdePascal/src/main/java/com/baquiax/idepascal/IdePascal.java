@@ -6,9 +6,6 @@ package com.baquiax.idepascal;
 
 import com.baquiax.idepascal.backend.Lexer;
 import com.baquiax.idepascal.backend.Parser;
-import com.baquiax.idepascal.backend.declaracion.DeclaracionConstante;
-import com.baquiax.idepascal.backend.declaracion.DeclaracionTipos;
-import com.baquiax.idepascal.backend.declaracion.DeclaracionVariable;
 import com.baquiax.idepascal.backend.errores.ErrorPascal;
 import com.baquiax.idepascal.backend.simbol.AST;
 import com.baquiax.idepascal.backend.simbol.Simbolo;
@@ -18,7 +15,6 @@ import com.baquiax.idepascal.backend.stament.Sentencia;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 
 import java.io.StringReader;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +50,7 @@ public class IdePascal {
                     var3: integer;
                 BEGIN
                     var1:= 2;
-                    writeln('resultado ',' de la suma: ',5+5);
+                    writeln('d',' de la suma: ',5+5);
                 END .   
                 """;
         Lexer lexer = new Lexer(new StringReader(content));
@@ -70,7 +66,7 @@ public class IdePascal {
                 if (i == null) {
                     continue;
                 }
-                var det = i.analizar(ast, tabla);
+                var det = i.interpretar(ast, tabla);
                 if (det instanceof ErrorPascal e) {
                     ast.getErrores().add(e);
                 }

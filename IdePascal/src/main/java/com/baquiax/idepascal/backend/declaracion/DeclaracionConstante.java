@@ -19,9 +19,9 @@ public class DeclaracionConstante extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         for (Constante cons : constantes) {
-            var value = cons.analizar(arbol, tableSimbols);
+            var value = cons.interpretar(arbol, tableSimbols);
             if(value instanceof ErrorPascal errorPascal){
                 arbol.getErrores().add(errorPascal);
             }

@@ -18,8 +18,8 @@ public class NOT extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
-        Object value = expresion.analizar(arbol, tableSimbols);
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
+        Object value = expresion.interpretar(arbol, tableSimbols);
         if (value instanceof ErrorPascal) {
             return value;
         }
