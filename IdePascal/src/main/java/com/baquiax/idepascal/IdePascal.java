@@ -32,7 +32,6 @@ public class IdePascal {
                     yes, true = boolean;
                     name, city = string;
                     fees, expenses = real;
-                    a = 1...5;
                     z,t = char;
                     vector = array [1..25] of real;
                 const
@@ -43,47 +42,21 @@ public class IdePascal {
                 var
                     arreglo1 : array [1..15] of char;
                     arreglo2 : array [1..10] of days;
-                    variable1 : a;
                     var1 : vector;
                     var2: 1...2;
                     b : yes;
-                    var3: integer;
+                    aa: integer;
+                    a: integer;
                 BEGIN
                     var1:= 2;
-                    writeln('d',' de la suma: ',5+5);
-                    case ('B') of
-                          'A' :
-                            begin
-                                writeln('Excellent!' );
-                                writeln('Excellent!' );
-                            end;
-                          'B': if(1) then
-                                case ('B') of
-                                  'A' :
-                                    begin
-                                        writeln('Excellent!' );
-                                        writeln('Excellent!' );
-                                    end;
-                                  'B': if(1) then
-                                        writeln('hola interior');
-                                  'C': writeln('es la C' );
-                                  'D' : writeln('You passed' );
-                            
-                                   else
-                                      begin
-                                        writeln('CASO POR DEFECTO' );
-                                        writeln('CASO POR DEFECTO' );
-                                      end;
-                        end;
-                          'C': writeln('es la C' );
-                          'D' : writeln('You passed' );
-                    
-                       else
-                          begin
-                            writeln('CASO POR DEFECTO' );
-                            writeln('CASO POR DEFECTO' );
-                          end;
-                        end;
+                    aa := 10;
+                    a := 10;
+                         (* repeat until loop execution *)
+                         repeat
+                            writeln('value of a: ', a);
+                            a := a + 1;
+                         until a = 20;
+                         writeln('valor final de a ', a);
                 END .   
                 """;
         Lexer lexer = new Lexer(new StringReader(content));

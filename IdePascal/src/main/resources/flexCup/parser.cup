@@ -17,6 +17,7 @@ import com.baquiax.idepascal.backend.expresion.*;
 import com.baquiax.idepascal.backend.expresion.operacion.aritmetica.*;
 import com.baquiax.idepascal.backend.expresion.operacion.booleanos.*;
 import com.baquiax.idepascal.backend.expresion.operacion.relacional.*;
+import com.baquiax.idepascal.backend.expresion.accesovariable.*;
 //declaraciones
 import com.baquiax.idepascal.backend.declaracion.*;
 import com.baquiax.idepascal.backend.sentencias.*;
@@ -85,7 +86,7 @@ nonterminal List<Sentencia> parametros_write;
 nonterminal Sentencia llamada_funcion, writeline, readline;
 nonterminal Sentencia asignacion;
 //sentencias, ciclos
-nonterminal Sentencia sentencia_if, sentencia_while;
+nonterminal Sentencia sentencia_if, sentencia_while, sentencia_for, repeat_until;
 //expresiones
 nonterminal Sentencia valor;
 nonterminal DataType data_type, data_type_record;
@@ -132,6 +133,9 @@ un_stament::= writeline:a       {: RESULT = a; :}
             | asignacion:a      {: RESULT = a; :}
             | sentencia_if:a    {: RESULT = a; :}
             | setencia_case:a   {: RESULT = a; :}
+            | sentencia_while:a {: RESULT = a; :}
+            | sentencia_for:a   {: RESULT = a; :}
+            | repeat_until:a    {: RESULT = a; :}
 ;
 
 
@@ -232,6 +236,15 @@ caso::=   expresion:a DOS_PUNTOS stament_bloque:b                       {: RESUL
         | expresion:a DOS_PUNTOS BEGIN bloque_codigo:b END PUNTO_COMA   {: RESULT = new Caso(a, b, aleft, aright); :}
 ;
 
+sentencia_while::= WHILE:i PAR_A expresion:a PAR_C DO BEGIN bloque_codigo:b END {: RESULT = new SentenciaWhile(a, b, ileft, iright); :}
+;
+
+sentencia_for::= FOR:i asignacion:a TO expresion:b DO BEGIN bloque_codigo:c END
+                    {: RESULT = new SentenciaFor(a, b, c, ileft, iright); :}
+;
+
+repeat_until::= REPEAT:i bloque_codigo:a UNTIL expresion:b {: RESULT = new RepeatUntil(a, b, ileft, iright); :}
+;
 
 //funciones
 writeline::= WRITELN:a PAR_A parametros_write:list PAR_C {: RESULT = new WriteLine(list, aleft, aright); :}
@@ -258,8 +271,6 @@ expresion::=  expresion:a SUMA:c expresion:b            {: RESULT = new Suma(a, 
             | expresion:a MENOR_IGUAL expresion:b       {: RESULT = new MenorIgual(a, b, aleft, aright); :}
             | expresion:a AND expresion:b               {: RESULT = new And(a, b, aleft, aright); :}
             | expresion:a OR expresion:b                {: RESULT = new OR(a, b, aleft, aright); :}
-            | expresion:a AND THEN expresion:b
-            | expresion:a OR ELSE expresion:b
             | PAR_A expresion:a PAR_C                   {: RESULT = a; :}
             | NOT expresion:a                           {: RESULT = new NOT(a, aleft, aright); :}    %prec NOT
             | MENOS expresion:a                         {: RESULT = new Unario(a, aleft, aright); :} %prec UNARIO
@@ -272,7 +283,7 @@ valor::=  ENTERO:a  {: RESULT = new Terminal(Integer.parseInt(a), new Tipo(DataT
         | CADENA:a  {: RESULT = new Terminal(a, new Tipo(DataType.CADENA), aleft, aright); :}
         | TRUE:a    {: RESULT = new Terminal(true, new Tipo(DataType.BOOLEAN), aleft, aright); :}
         | FALSE:a   {: RESULT = new Terminal(false, new Tipo(DataType.BOOLEAN), aleft, aright); :}
-        | IDENTIFICADOR:a
+        | IDENTIFICADOR:a   {: RESULT = new Acceso(a, aleft, aright); :}
         | IDENTIFICADOR:a COR_A expresion:b COR_C
 ;
 

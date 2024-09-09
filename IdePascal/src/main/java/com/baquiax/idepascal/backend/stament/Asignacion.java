@@ -9,6 +9,8 @@ public class Asignacion extends Sentencia {
     private String id;
     private Sentencia expresion;
 
+    private Object value;
+
     public Asignacion(String id, Sentencia expresion, int line, int col) {
         super(new Tipo(DataType.ANY), line, col);
         this.id = id;
@@ -78,6 +80,8 @@ public class Asignacion extends Sentencia {
                     this.line, this.col
             );
         }
+        this.value = value;
+        this.tipo.setDataType(this.expresion.tipo.getDataType());
         buscado.setValue(value);
         return null;
     }
@@ -109,5 +113,13 @@ public class Asignacion extends Sentencia {
             }
         }
         return null;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public String getId() {
+        return id;
     }
 }
