@@ -4,7 +4,6 @@
  */
 package com.baquiax.idepascal.ventanas;
 
-
 import com.baquiax.idepascal.backend.Lexer;
 import com.baquiax.idepascal.backend.Parser;
 import com.baquiax.idepascal.backend.errores.ErrorPascal;
@@ -50,6 +49,7 @@ public class Editor extends javax.swing.JFrame {
 
     private Parser parser;
     private Lexer lexer;
+    private AST ast;
 
     /**
      * Creates new form Editor
@@ -64,13 +64,13 @@ public class Editor extends javax.swing.JFrame {
         this.ruta = "";
         rutas.add("");
 
+        this.ast = null;
+
         this.content = "";
         this.dot = "";
         this.img = ManejoArchivo.IMG_TREE;
 
-
         //simbols
-
         setLineNumbers();
         setIconMenu();
 
@@ -85,8 +85,10 @@ public class Editor extends javax.swing.JFrame {
         utiles.setIcon(menunewFile, "/img/new1.png");
         utiles.setIcon(menuOpen, "/img/open.png");
         utiles.setIcon(menuSave, "/img/save.png");
+        utiles.setIcon(menuGuardarComo, "/img/saveas.png");
         utiles.setIcon(menuEjecutar, "/img/run.png");
         utiles.setIcon(menuReportes, "/img/report.png");
+        utiles.setIcon(menuTabalTipos, "/img/report.png");
         utiles.setIcon(menuCloseFile, "/img/salir.png");
         utiles.setIcon(menuSimbols, "/img/simbol.png");
     }
@@ -111,14 +113,13 @@ public class Editor extends javax.swing.JFrame {
         menuOpen = new javax.swing.JMenuItem();
         menunewFile = new javax.swing.JMenuItem();
         menuSave = new javax.swing.JMenuItem();
+        menuGuardarComo = new javax.swing.JMenuItem();
         menuCloseFile = new javax.swing.JMenuItem();
         menuEjecutar = new javax.swing.JMenu();
         menuReportes = new javax.swing.JMenu();
-        menuLexico = new javax.swing.JMenuItem();
-        menuSintactico = new javax.swing.JMenuItem();
-        menuSemantico = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        menuVerErrores = new javax.swing.JMenuItem();
         menuSimbols = new javax.swing.JMenu();
+        menuTabalTipos = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -172,6 +173,15 @@ public class Editor extends javax.swing.JFrame {
         });
         menu.add(menuSave);
 
+        menuGuardarComo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        menuGuardarComo.setText("Guardar como");
+        menuGuardarComo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuGuardarComoActionPerformed(evt);
+            }
+        });
+        menu.add(menuGuardarComo);
+
         menuCloseFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         menuCloseFile.setText("Cerrar archivo");
         menuCloseFile.addActionListener(new java.awt.event.ActionListener() {
@@ -188,7 +198,6 @@ public class Editor extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 menuEjecutarMouseClicked(evt);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 menuEjecutarMouseExited(evt);
             }
@@ -202,37 +211,13 @@ public class Editor extends javax.swing.JFrame {
 
         menuReportes.setText("Reporte de errores");
 
-        menuLexico.setText("Errores lexicos");
-        menuLexico.addActionListener(new java.awt.event.ActionListener() {
+        menuVerErrores.setText("Ver todos los errores");
+        menuVerErrores.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuLexicoActionPerformed(evt);
+                menuVerErroresActionPerformed(evt);
             }
         });
-        menuReportes.add(menuLexico);
-
-        menuSintactico.setText("Errores sintácticos");
-        menuSintactico.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuSintacticoActionPerformed(evt);
-            }
-        });
-        menuReportes.add(menuSintactico);
-
-        menuSemantico.setText("Errores semánticos");
-        menuSemantico.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuSemanticoActionPerformed(evt);
-            }
-        });
-        menuReportes.add(menuSemantico);
-
-        jMenuItem1.setText("Ver todos los errores");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
-            }
-        });
-        menuReportes.add(jMenuItem1);
+        menuReportes.add(menuVerErrores);
 
         jMenuBar1.add(menuReportes);
 
@@ -244,6 +229,14 @@ public class Editor extends javax.swing.JFrame {
         });
         jMenuBar1.add(menuSimbols);
 
+        menuTabalTipos.setText("Tabla de tipos");
+        menuTabalTipos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                menuTabalTiposMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(menuTabalTipos);
+
         jMenu3.setText("Ayuda...");
         jMenuBar1.add(jMenu3);
 
@@ -252,18 +245,18 @@ public class Editor extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
-                                .addContainerGap())
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
-                                .addContainerGap())
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -362,18 +355,18 @@ public class Editor extends javax.swing.JFrame {
             JScrollPane scrooll = (JScrollPane) jTabbedPane1.getSelectedComponent();
             JTextPane edicion = (JTextPane) scrooll.getViewport().getView();
             consola.setText("");
-            System.out.println("ejecutando...");
             if (!edicion.getText().isBlank()) {
 
                 lexer = new Lexer(new StringReader(edicion.getText()));
                 parser = new Parser(lexer);
                 try {
                     List<Sentencia> result = (List<Sentencia>) parser.parse().value;
-                    var ast = new AST(result);
+                    ast = new AST(result);
                     var tabla = new TableSimbols();
                     tabla.setNombre("GLOBAL");
                     ast.setLog("");
                     ast.setGlobal(tabla);
+
                     for (Sentencia i : ast.getSentecias()) {
                         if (i == null) {
                             continue;
@@ -383,29 +376,22 @@ public class Editor extends javax.swing.JFrame {
                             ast.getErrores().add(e);
                         }
                     }
-                    System.out.println("tipos: ");
-                    Map<String, Tipo> map = ast.getTablaTipos().getTipos();
-                    for (String key : map.keySet()) {
-                        Tipo value = map.get(key);
-                        System.out.println("id: " + key + ", tipo: " + value.toString());
-                    }
-                    System.out.println("simbolos");
-                    Map<String, Object> map1 = ast.getReporteSimbolos();
-                    for (String key : map1.keySet()) {
-                        Simbolo value = (Simbolo) map1.get(key);
-                        System.out.println(value.toString());
-                    }
+                    ast.getErrores().addAll(lexer.listErrores);
+                    ast.getErrores().addAll(parser.listaErrores);
                     if (ast.getErrores().isEmpty()) {
-                        System.out.println("todo bien");
+                        consola.setForeground(Color.black);
+                        consola.setText("✅ No se encontraron errores en el texto de entrada.");
                     } else {
-                        System.out.println("errores:");
-                        ast.getErrores().forEach(element -> {
-                            System.out.println(element.getDescription() + " linea " + element.getRow() + " col: " + element.getCol());
-                        });
+                        consola.setForeground(Color.red);
+                        String aux = "❌ Errores en el texto de entrada (ver reporte de errores): \n";
+                        for (ErrorPascal element : ast.getErrores()) {
+                            aux += element.getDescription() + " linea " + element.getRow() + " col: " + element.getCol()+"\n";
+                        }
+                        consola.setText(aux);
                     }
-                    System.out.println("console:" + ast.getLog());
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
+                    JOptionPane.showMessageDialog(null, "Error inesperado, comuníquese con el desarrollador.");
                     throw new RuntimeException(e);
                 }
 
@@ -416,24 +402,12 @@ public class Editor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_menuEjecutarMouseClicked
 
-    private void menuLexicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuLexicoActionPerformed
+    private void menuVerErroresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuVerErroresActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_menuLexicoActionPerformed
-
-    private void menuSintacticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSintacticoActionPerformed
-        // TODO add your handling code here:
-
-    }//GEN-LAST:event_menuSintacticoActionPerformed
-
-    private void menuSemanticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSemanticoActionPerformed
-        // TODO add your handling code here:
-
-    }//GEN-LAST:event_menuSemanticoActionPerformed
-
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+        if (ast != null) {
+            new ReporteErrores(ast.getErrores()).setVisible(true);
+        }
+    }//GEN-LAST:event_menuVerErroresActionPerformed
 
     private void menuEjecutarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEjecutarMouseExited
         // TODO add your handling code here:
@@ -442,29 +416,59 @@ public class Editor extends javax.swing.JFrame {
 
     private void menuSimbolsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuSimbolsMouseClicked
         // TODO add your handling code here:
-
+        if (ast != null) {
+            if (ast.getErrores().isEmpty()) {
+                new ReporteTablaSimbolos(ast).setVisible(true);
+            }
+        }
     }//GEN-LAST:event_menuSimbolsMouseClicked
 
+    private void menuTabalTiposMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuTabalTiposMouseClicked
+        // TODO add your handling code here:
+        if (ast != null) {
+            if (ast.getErrores().isEmpty()) {
+                new ReporteTablaTipos(ast).setVisible(true);
+            }
+        }
+    }//GEN-LAST:event_menuTabalTiposMouseClicked
+
+    private void menuGuardarComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuGuardarComoActionPerformed
+        // TODO add your handling code here:
+        guardarComo();
+    }//GEN-LAST:event_menuGuardarComoActionPerformed
+
+    private void guardarComo() {
+        int index = jTabbedPane1.getSelectedIndex();
+        JScrollPane scrooll = (JScrollPane) jTabbedPane1.getSelectedComponent();
+        JTextPane edicion = (JTextPane) scrooll.getViewport().getView();
+
+        ruta = archivo.saveFile();
+        if (!ruta.equals("")) {
+            File file = new File(ruta + ManejoArchivo.FILTRO);
+            jTabbedPane1.setTitleAt(index, file.getName());
+            rutas.set(index, ruta + ManejoArchivo.FILTRO);
+            archivo.writeFile(ruta + ManejoArchivo.FILTRO, edicion.getText());
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextPane consola;
     private javax.swing.JTextPane editor;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JMenu menu;
     private javax.swing.JMenuItem menuCloseFile;
     private javax.swing.JMenu menuEjecutar;
-    private javax.swing.JMenuItem menuLexico;
+    private javax.swing.JMenuItem menuGuardarComo;
     private javax.swing.JMenuItem menuOpen;
     private javax.swing.JMenu menuReportes;
     private javax.swing.JMenuItem menuSave;
-    private javax.swing.JMenuItem menuSemantico;
     private javax.swing.JMenu menuSimbols;
-    private javax.swing.JMenuItem menuSintactico;
+    private javax.swing.JMenu menuTabalTipos;
+    private javax.swing.JMenuItem menuVerErrores;
     private javax.swing.JMenuItem menunewFile;
     private javax.swing.JScrollPane scrollEditor;
     // End of variables declaration//GEN-END:variables

@@ -11,5 +11,7 @@ package com.baquiax.idepascal.backend.errores;
 public enum TipoError {
     LEXICO,
     SINTACTICO,
-    SEMANTICO
+    SEMANTICO,
+    RECUPERABLE,
+    IRECUPERABLE
 }

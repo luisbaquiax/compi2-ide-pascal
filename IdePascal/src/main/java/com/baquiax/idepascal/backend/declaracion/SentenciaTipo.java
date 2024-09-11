@@ -25,7 +25,7 @@ public class SentenciaTipo extends Sentencia {
     }
 
     /**
-     * Para crear tipos basados en subrangos
+     * Para crear tipos basados en SUB-RANGO
      *
      * @param ids
      * @param expresion1
@@ -41,6 +41,16 @@ public class SentenciaTipo extends Sentencia {
         this.expresion2 = expresion2;
     }
 
+    /**
+     * Para declarar tipos de ARRAY
+     * @param ids
+     * @param expresion1
+     * @param expresion2
+     * @param tipo
+     * @param tipoDato
+     * @param line
+     * @param col
+     */
     public SentenciaTipo(List<String> ids, Sentencia expresion1, Sentencia expresion2, Tipo tipo, Tipo tipoDato, int line, int col) {
         super(tipo, line, col);
         this.ids = ids;
@@ -58,6 +68,7 @@ public class SentenciaTipo extends Sentencia {
                     tipo1.setId(id);
                     tipo1.setDataType(this.tipo.getDataType());
                     tipo1.setTypeBase(this.tipo.getDataType());
+                    tipo1.setDimension(1);
                     if (!arbol.tipoAgregado(tipo1)) {
                         arbol.getErrores().add(new ErrorPascal(
                                 TipoError.SEMANTICO.name(),
@@ -119,6 +130,7 @@ public class SentenciaTipo extends Sentencia {
         for (String id : ids) {
             Tipo tipoSubrango = new Tipo(id, DataType.SUBRANGO, indice1, indice2);
             tipoSubrango.setTypeBase(DataType.ENTERO);
+            tipoSubrango.setDimension(1);
             if (!arbol.tipoAgregado(tipoSubrango)) {
                 arbol.getErrores().add(new ErrorPascal(
                         TipoError.SEMANTICO.name(),

@@ -24,6 +24,8 @@ public class Constante extends Sentencia {
             return value;
         }
         Simbolo simbolo = new Simbolo(this.id, new Tipo(this.expresion.tipo.getDataType()), value, this.mutable);
+        simbolo.setAmbito(tableSimbols.getNombre());
+        simbolo.setCategoria(Categoria.CONSTANTE);
         if (tableSimbols.agregarVariable(simbolo, arbol)) {
             return null;
         }

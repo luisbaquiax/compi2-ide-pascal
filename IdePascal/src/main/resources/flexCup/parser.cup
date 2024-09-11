@@ -37,12 +37,12 @@ parser code {:
     public void syntax_error(Symbol s) {
             String description = "No se esperaba el componente: " + (s.value) + " lin,col: " +s.left +" "+s.right;
             System.out.println(description);
-            listaErrores.add(new ErrorPascal(TipoError.SEMANTICO.name(), description, s.left, s.right));
+            listaErrores.add(new ErrorPascal(TipoError.RECUPERABLE.name(), description, s.left, s.right));
     }
     public void unrecovered_syntax_error(Symbol s) {
             String description = "No se esperaba el componente: " + (s.value);
             System.out.println(description);
-            listaErrores.add(new ErrorPascal(TipoError.SEMANTICO.name(), description, s.left, s.right));
+            listaErrores.add(new ErrorPascal(TipoError.IRECUPERABLE.name(), description, s.left, s.right));
     }
 :};
 
@@ -119,6 +119,7 @@ component_program::= staments:a BEGIN bloque_codigo:b END PUNTO
 
 staments::=   staments:a stament:b  {: RESULT = a; RESULT.add(b); :}
             | stament:a  {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+            | error PUNTO_COMA
 ;
 
 stament::=    declaracion_tipos:a       {: RESULT = a; :}
@@ -187,6 +188,7 @@ un_stament::= writeline:a       {: RESULT = a; :}
             | llamada_funcion:a {: RESULT = a; :}
             | s_continue:a      {: RESULT = a; :}
             | s_break:a         {: RESULT = a; :}
+            | error PUNTO_COMA
 ;
 
 

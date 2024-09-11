@@ -43,15 +43,11 @@ public class TableSimbols {
     }
 
     /**
-     * Retorna nulo si la variable no exise
+     * Retorna nulo si la variable no existe
      * @param id
      * @return
      */
     public Simbolo buscarVariable(String id) {
-        /**
-         *   for (TableSymbols i = this; i != null; i = i.tableAnterior) {
-         *             Simbolo search = (Simbolo) i.actual.get(id.toLowerCase());
-         */
         for (TableSimbols i = this; i != null; i = i.getTablaAnterior()) {
             Simbolo buscado = (Simbolo) i.getTablaActual().get(id.toLowerCase());
             if (buscado != null) {

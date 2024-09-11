@@ -136,6 +136,7 @@ public class Variable extends Sentencia {
             this.tipo.setTypeBase(this.tipo.getDataType());
             Simbolo agregando = new Simbolo(id, this.tipo, value, true);
             agregando.setAmbito(tableSimbols.getNombre());
+            agregando.setCategoria(Categoria.VARIABLE);
             if (!tableSimbols.agregarVariable(agregando, arbol)) {
                 arbol.getErrores().add(new ErrorPascal(
                         TipoError.SEMANTICO.name(),
@@ -163,7 +164,7 @@ public class Variable extends Sentencia {
 
             Simbolo agregando = new Simbolo(elementId, tipo, null, true);
             agregando.setAmbito(tableSimbols.getNombre());
-
+            agregando.setCategoria(Categoria.VARIABLE);
             if (tipoBuscado.getDataType().equals(DataType.ARRAY)) {
                 List<Object> values = new ArrayList<>();
                 for (int j = 0; j < tipo.getIndiceMaximo() + 1; j++) {
@@ -230,6 +231,7 @@ public class Variable extends Sentencia {
             Tipo tipo = new Tipo(subs, DataType.SUBRANGO, DataType.ENTERO, inferior, superior);
             Simbolo subrango = new Simbolo(subs, tipo, inferior, true);
             subrango.setAmbito(tableSimbols.getNombre());
+            subrango.setCategoria(Categoria.VARIABLE);
             if (!tableSimbols.agregarVariable(subrango, arbol)) {
                 arbol.getErrores().add(new ErrorPascal(
                         TipoError.SINTACTICO.name(),
@@ -279,6 +281,9 @@ public class Variable extends Sentencia {
             tipo.setDimension(indice2);
 
             Simbolo arreglo = new Simbolo(i, tipo, null, true);
+            arreglo.setAmbito(tableSimbols.getNombre());
+            arreglo.setCategoria(Categoria.VARIABLE);
+
             if (this.tipo.getDataType().equals(DataType.CARACTER)) {
                 arreglo.setValue("");
             } else {
@@ -289,7 +294,6 @@ public class Variable extends Sentencia {
                 arreglo.setValue(values);
             }
 
-            arreglo.setAmbito(tableSimbols.getNombre());
             if (!tableSimbols.agregarVariable(arreglo, arbol)) {
                 arbol.getErrores().add(
                         new ErrorPascal(TipoError.SINTACTICO.name(),
@@ -354,6 +358,7 @@ public class Variable extends Sentencia {
             Simbolo arreglo = new Simbolo(i, tipo, values, true);
             arreglo.setAmbito(tableSimbols.getNombre());
             arreglo.setTipoPersonalizado(this.id);
+            arreglo.setCategoria(Categoria.VARIABLE);
             if (!tableSimbols.agregarVariable(arreglo, arbol)) {
                 arbol.getErrores().add(
                         new ErrorPascal(TipoError.SINTACTICO.name(),

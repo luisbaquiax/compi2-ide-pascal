@@ -30,7 +30,7 @@ public class LlamadaFuncion extends Sentencia {
             );
         }
         TableSimbols entornoLlamada = new TableSimbols(arbol.getGlobal());
-        entornoLlamada.setNombre("Llamada: " + this.id);
+        entornoLlamada.setNombre(this.id);
 
         funtion.setParams();
         if (this.parametros.size() != funtion.getParams().size()) {
