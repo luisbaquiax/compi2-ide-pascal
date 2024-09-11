@@ -28,6 +28,7 @@ public class Tipo {
 
     public Tipo(DataType dataType) {
         this.dataType = dataType;
+        this.typeBase = dataType;
         switch (dataType) {
             case ENTERO, REAL, BOOLEAN, CARACTER, CADENA -> {
                 this.id = dataType.nombre;

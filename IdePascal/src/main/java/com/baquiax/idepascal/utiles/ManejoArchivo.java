@@ -36,8 +36,8 @@ public class ManejoArchivo {
 
     private JFileChooser choser;
     public static final String FILTRO = ".pas";
-    public static final String DOT_TREE = "img/tree.dot";
-    public static final String IMG_TREE = "img/grafica.png";
+    public static final String DOT_TREE = "arbol-llamadas/tree.dot";
+    public static final String IMG_TREE = "arbol-llamadas/grafica.png";
     
     public static final String[] FILTERS = new String[]{"pas","pp"};
     

@@ -8,12 +8,12 @@ import com.baquiax.idepascal.backend.simbol.TableSimbols;
 import com.baquiax.idepascal.backend.simbol.Tipo;
 import com.baquiax.idepascal.backend.stament.Sentencia;
 
-public class AndThen extends Sentencia {
+public class OrElse extends Sentencia {
 
     private Sentencia condicion1;
     private Sentencia condicion2;
 
-    public AndThen(Sentencia condicion1, Sentencia condicion2, int line, int col) {
+    public OrElse(Sentencia condicion1, Sentencia condicion2, int line, int col) {
         super(new Tipo(DataType.BOOLEAN), line, col);
         this.condicion1 = condicion1;
         this.condicion2 = condicion2;
@@ -43,7 +43,7 @@ public class AndThen extends Sentencia {
                     this.condicion2.col, this.condicion2.col
             );
         }
-        if(Boolean.parseBoolean(value1.toString()) && Boolean.parseBoolean(value2.toString())){
+        if(Boolean.parseBoolean(value1.toString()) || Boolean.parseBoolean(value2.toString())){
             return true;
         }
         return false;

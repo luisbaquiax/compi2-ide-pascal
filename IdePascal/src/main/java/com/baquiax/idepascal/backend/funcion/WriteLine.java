@@ -19,10 +19,10 @@ public class WriteLine extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         StringBuilder aux = new StringBuilder();
         for (Sentencia ex : expresiones) {
-            Object value = ex.analizar(arbol, tableSimbols);
+            Object value = ex.interpretar(arbol, tableSimbols);
             if (value instanceof ErrorPascal) {
                 return value;
             }

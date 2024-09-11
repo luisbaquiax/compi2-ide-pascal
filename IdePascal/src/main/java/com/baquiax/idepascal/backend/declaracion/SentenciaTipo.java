@@ -50,7 +50,7 @@ public class SentenciaTipo extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         switch (this.tipo.getDataType()) {
             case ENTERO, REAL, CADENA, CARACTER, BOOLEAN -> {
                 for (String id : ids) {
@@ -80,11 +80,11 @@ public class SentenciaTipo extends Sentencia {
     }
 
     private Object declararTipoSubrango(AST arbol, TableSimbols tableSimbols) {
-        Object value1 = expresion1.analizar(arbol, tableSimbols);
+        Object value1 = expresion1.interpretar(arbol, tableSimbols);
         if (value1 instanceof ErrorPascal) {
             return value1;
         }
-        Object value2 = expresion2.analizar(arbol, tableSimbols);
+        Object value2 = expresion2.interpretar(arbol, tableSimbols);
         if (value2 instanceof ErrorPascal) {
             return value2;
         }
@@ -130,11 +130,11 @@ public class SentenciaTipo extends Sentencia {
     }
 
     private Object declararTipoArray(AST arbol, TableSimbols tableSimbols) {
-        Object value1 = expresion1.analizar(arbol, tableSimbols);
+        Object value1 = expresion1.interpretar(arbol, tableSimbols);
         if (value1 instanceof ErrorPascal) {
             return value1;
         }
-        Object value2 = expresion2.analizar(arbol, tableSimbols);
+        Object value2 = expresion2.interpretar(arbol, tableSimbols);
         if (value2 instanceof ErrorPascal) {
             return value2;
         }

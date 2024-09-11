@@ -20,12 +20,12 @@ public class Mayor extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
-        Object derecho = operandoDer.analizar(arbol, tableSimbols);
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
+        Object derecho = operandoDer.interpretar(arbol, tableSimbols);
         if(derecho instanceof ErrorPascal){
             return derecho;
         }
-        Object izquierdo = operandoIzq.analizar(arbol, tableSimbols);
+        Object izquierdo = operandoIzq.interpretar(arbol, tableSimbols);
         if(izquierdo instanceof ErrorPascal){
             return izquierdo;
         }
@@ -41,7 +41,7 @@ public class Mayor extends Sentencia {
                     case ENTERO, REAL -> { return Double.parseDouble(valueIzq.toString()) > Double.parseDouble(valueDer.toString()); }
                     case BOOLEAN -> {
                         int auxi = Boolean.parseBoolean(valueDer.toString()) ? 1 : 0;
-                        return (int) valueIzq > auxi;
+                        return Double.parseDouble(valueIzq.toString()) > auxi;
                     }
                     default -> {
                         return new ErrorPascal(

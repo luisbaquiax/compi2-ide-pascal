@@ -18,9 +18,9 @@ public class DeclaracionVariable extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         for(Variable va: variables){
-            var value = va.analizar(arbol, tableSimbols);
+            var value = va.interpretar(arbol, tableSimbols);
             if(value instanceof ErrorPascal errorPascal){
                 arbol.getErrores().add(errorPascal);
             }

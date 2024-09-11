@@ -26,7 +26,7 @@ public class AtributoRecord extends Sentencia {
 
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         if (this.limite1 == null) {
 
         }else{

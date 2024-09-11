@@ -18,9 +18,9 @@ public class DeclaracionTipos extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         for(SentenciaTipo s: tipos){
-            Object sintetizado = s.analizar(arbol, tableSimbols);
+            Object sintetizado = s.interpretar(arbol, tableSimbols);
             if(sintetizado instanceof ErrorPascal errorPascal){
                 arbol.getErrores().add(errorPascal);
             }

@@ -20,12 +20,12 @@ public class OR extends Sentencia {
     }
 
     @Override
-    public Object analizar(AST arbol, TableSimbols tableSimbols) {
-        Object izquierdo = this.operandoIzq.analizar(arbol, tableSimbols);
+    public Object interpretar(AST arbol, TableSimbols tableSimbols) {
+        Object izquierdo = this.operandoIzq.interpretar(arbol, tableSimbols);
         if (izquierdo instanceof ErrorPascal) {
             return izquierdo;
         }
-        Object derecho = this.operandoDer.analizar(arbol, tableSimbols);
+        Object derecho = this.operandoDer.interpretar(arbol, tableSimbols);
         if (derecho instanceof ErrorPascal) {
             return derecho;
         }
