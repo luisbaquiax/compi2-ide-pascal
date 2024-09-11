@@ -5,10 +5,18 @@
 package com.baquiax.idepascal.ventanas;
 
 
-
+import com.baquiax.idepascal.backend.Lexer;
+import com.baquiax.idepascal.backend.Parser;
+import com.baquiax.idepascal.backend.errores.ErrorPascal;
+import com.baquiax.idepascal.backend.simbol.AST;
+import com.baquiax.idepascal.backend.simbol.Simbolo;
+import com.baquiax.idepascal.backend.simbol.TableSimbols;
+import com.baquiax.idepascal.backend.simbol.Tipo;
+import com.baquiax.idepascal.backend.stament.Sentencia;
 import com.baquiax.idepascal.utiles.ManejoArchivo;
 import com.baquiax.idepascal.utiles.NumberLine;
 import com.baquiax.idepascal.utiles.Utiles;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.io.BufferedReader;
@@ -40,6 +48,9 @@ public class Editor extends javax.swing.JFrame {
     private String dot;
     private String img;
 
+    private Parser parser;
+    private Lexer lexer;
+
     /**
      * Creates new form Editor
      */
@@ -56,7 +67,7 @@ public class Editor extends javax.swing.JFrame {
         this.content = "";
         this.dot = "";
         this.img = ManejoArchivo.IMG_TREE;
-      
+
 
         //simbols
 
@@ -177,6 +188,7 @@ public class Editor extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 menuEjecutarMouseClicked(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 menuEjecutarMouseExited(evt);
             }
@@ -240,18 +252,18 @@ public class Editor extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
+                                .addContainerGap())
         );
 
         pack();
@@ -346,16 +358,57 @@ public class Editor extends javax.swing.JFrame {
 
     private void menuEjecutarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEjecutarMouseClicked
         // TODO add your handling code here:
- 
         if (jTabbedPane1.getComponents().length > 0) {
             JScrollPane scrooll = (JScrollPane) jTabbedPane1.getSelectedComponent();
             JTextPane edicion = (JTextPane) scrooll.getViewport().getView();
             consola.setText("");
             System.out.println("ejecutando...");
             if (!edicion.getText().isBlank()) {
-                // System.out.println(edicion.getText());
 
-                
+                lexer = new Lexer(new StringReader(edicion.getText()));
+                parser = new Parser(lexer);
+                try {
+                    List<Sentencia> result = (List<Sentencia>) parser.parse().value;
+                    var ast = new AST(result);
+                    var tabla = new TableSimbols();
+                    tabla.setNombre("GLOBAL");
+                    ast.setLog("");
+                    ast.setGlobal(tabla);
+                    for (Sentencia i : ast.getSentecias()) {
+                        if (i == null) {
+                            continue;
+                        }
+                        var det = i.interpretar(ast, tabla);
+                        if (det instanceof ErrorPascal e) {
+                            ast.getErrores().add(e);
+                        }
+                    }
+                    System.out.println("tipos: ");
+                    Map<String, Tipo> map = ast.getTablaTipos().getTipos();
+                    for (String key : map.keySet()) {
+                        Tipo value = map.get(key);
+                        System.out.println("id: " + key + ", tipo: " + value.toString());
+                    }
+                    System.out.println("simbolos");
+                    Map<String, Object> map1 = ast.getReporteSimbolos();
+                    for (String key : map1.keySet()) {
+                        Simbolo value = (Simbolo) map1.get(key);
+                        System.out.println(value.toString());
+                    }
+                    if (ast.getErrores().isEmpty()) {
+                        System.out.println("todo bien");
+                    } else {
+                        System.out.println("errores:");
+                        ast.getErrores().forEach(element -> {
+                            System.out.println(element.getDescription() + " linea " + element.getRow() + " col: " + element.getCol());
+                        });
+                    }
+                    System.out.println("console:" + ast.getLog());
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    throw new RuntimeException(e);
+                }
+
             } else {
                 consola.setForeground(Color.red);
                 consola.setText("Nada que ejecutar");
@@ -369,17 +422,17 @@ public class Editor extends javax.swing.JFrame {
 
     private void menuSintacticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSintacticoActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_menuSintacticoActionPerformed
 
     private void menuSemanticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSemanticoActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_menuSemanticoActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void menuEjecutarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEjecutarMouseExited
@@ -389,7 +442,7 @@ public class Editor extends javax.swing.JFrame {
 
     private void menuSimbolsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuSimbolsMouseClicked
         // TODO add your handling code here:
-       
+
     }//GEN-LAST:event_menuSimbolsMouseClicked
 
 

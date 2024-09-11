@@ -55,9 +55,23 @@ public class SentenciaFor extends Sentencia {
         for (int i = inicial; i <= finalizacion; i++) {
             TableSimbols entornoInterior = new TableSimbols(entornoForDo);
             for (Sentencia s : this.sentencias) {
+                if(s instanceof SentenciaBreak){
+                    return null;
+                }
+                if(s instanceof SentenciaContinue){
+                    break;
+                }
+
                 var value = s.interpretar(arbol, entornoInterior);
                 if (value instanceof ErrorPascal e) {
                     arbol.getErrores().add(e);
+                }
+
+                if(value instanceof SentenciaBreak){
+                    return null;
+                }
+                if(value instanceof SentenciaContinue){
+                    break;
                 }
             }
             actualizarVariable(entornoForDo, asig.getId());

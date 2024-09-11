@@ -56,14 +56,17 @@ terminal PROGRAM, RECORD, REAL, REPEAT, READLN, SET, THEN, TO, TYPE, UNTIL, VAR,
 terminal WRITELN, INTEGER, FOR, MENOS, SUMA, MULTI, DIVISION, IGUAL, COMA, PUNTO_COMA;
 terminal PUNTO, TRES_PUNTO, DOS_PUNTOS, PAR_A, PAR_C, COR_A, COR_C, IGUALACION, LLAVE_A, LLAVE_C, COMILLA;
 terminal DIFERENTE, MAYOR, MENOR, MENOR_IGUAL, MAYOR_IGUAL;
-terminal LONGINT, STRING, BOOLEAN, UNARIO;
+terminal LONGINT, STRING, BOOLEAN, UNARIO, AND_THEN, OR_ELSE;
 terminal String IDENTIFICADOR, ENTERO, DECIMAL, CADENA, TRUE, FALSE;
 //terminal CARCTER;
 
 //nonterminal
-nonterminal List<Sentencia> inicio, staments, inicial_sentencias, inicial_sentencia;
-nonterminal List<Sentencia> bloque_codigo;
-nonterminal Sentencia stament, stament_bloque, setencia_case;
+nonterminal List<Sentencia> inicio, staments, components_program;
+nonterminal List<Sentencia> bloque_codigo, list_params;
+nonterminal Sentencia stament, component_program, stament_bloque, setencia_case, op_tipos, op_vars, op_consts, op_fun, op_proce;
+nonterminal Sentencia funciones, procedimiento;
+nonterminal List<Parametro> parametros;
+nonterminal Parametro parametro;
 nonterminal List<Caso> casos;
 nonterminal Caso caso;
 nonterminal Sentencia un_stament, un_stament_punto_coma;
@@ -81,9 +84,9 @@ nonterminal List<AtributoRecord> atributos_record;
 nonterminal AtributoRecord atributo_record;
 nonterminal List<String> ids_variables;
 nonterminal String id_variable;
-nonterminal Sentencia expresion;
+nonterminal Sentencia expresion, condicion;
 nonterminal List<Sentencia> parametros_write;
-nonterminal Sentencia llamada_funcion, writeline, readline;
+nonterminal Sentencia llamada_funcion, writeline, readline, s_break, s_continue;
 nonterminal Sentencia asignacion;
 //sentencias, ciclos
 nonterminal Sentencia sentencia_if, sentencia_while, sentencia_for, repeat_until;
@@ -91,9 +94,9 @@ nonterminal Sentencia sentencia_if, sentencia_while, sentencia_for, repeat_until
 nonterminal Sentencia valor;
 nonterminal DataType data_type, data_type_record;
 
+precedence left AND_THEN, OR_ELSE;
 precedence left OR;
 precedence left AND;
-//precedence right NOT;
 precedence left IGUALACION, DIFERENTE, MENOR, MAYOR, MENOR_IGUAL, MAYOR_IGUAL;
 precedence left SUMA, MENOS;
 precedence left MULTI, DIVISION, DIV, MOD;
@@ -103,7 +106,15 @@ precedence left ELSE;
 
 start with inicio;
 
-inicio::= staments:a {: RESULT = a; :}
+inicio::= PROGRAM IDENTIFICADOR PUNTO_COMA components_program:a {: RESULT = a; :}
+;
+
+components_program::= components_program:a component_program:b {: RESULT = a; RESULT.add(b); :}
+                    | component_program:a {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+;
+
+component_program::= staments:a BEGIN bloque_codigo:b END PUNTO
+                    {: RESULT = new ProgramaPrincipal(a, b, aleft, aright); :}
 ;
 
 staments::=   staments:a stament:b  {: RESULT = a; RESULT.add(b); :}
@@ -113,19 +124,56 @@ staments::=   staments:a stament:b  {: RESULT = a; RESULT.add(b); :}
 stament::=    declaracion_tipos:a       {: RESULT = a; :}
             | declaracion_contantes:a   {: RESULT = a; :}
             | declaracion_variable:a    {: RESULT = a; :}
-            | BEGIN bloque_codigo:a END PUNTO     {: RESULT = new ProgramaPrincipal(a, aleft, aright); :}
+            | funciones:a               {: RESULT = a; :}
+            | procedimiento:a           {: RESULT = a; :}
+;
+
+funciones::=  FUNCTION IDENTIFICADOR:i PAR_A parametros:a PAR_C DOS_PUNTOS data_type:b PUNTO_COMA declaracion_variable:c BEGIN bloque_codigo:d END PUNTO_COMA
+                {: RESULT = new Funtion(i, a, new Tipo(b), c, d, ileft, iright); :}
+            | FUNCTION IDENTIFICADOR:i PAR_A PAR_C DOS_PUNTOS data_type:b PUNTO_COMA declaracion_variable:c BEGIN bloque_codigo:d END PUNTO_COMA
+                {: RESULT = new Funtion(i, new ArrayList<Parametro>(), new Tipo(b), c, d, ileft, iright); :}
+            | FUNCTION IDENTIFICADOR:i PAR_A parametros:a PAR_C DOS_PUNTOS data_type:b PUNTO_COMA BEGIN bloque_codigo:d END PUNTO_COMA
+                {: RESULT = new Funtion(i, a, new Tipo(b), null, d, ileft, iright); :}
+            | FUNCTION IDENTIFICADOR:i PAR_A PAR_C DOS_PUNTOS data_type:b PUNTO_COMA BEGIN bloque_codigo:d END PUNTO_COMA
+                {: RESULT = new Funtion(i, new ArrayList<Parametro>(), new Tipo(b), null, d, ileft, iright); :}
+;
+
+procedimiento::= PROCEDURE IDENTIFICADOR:i PAR_A parametros:a PAR_C PUNTO_COMA declaracion_variable:b BEGIN bloque_codigo:c END PUNTO_COMA
+                    {: RESULT = new Funtion(i, a, new Tipo(DataType.ANY), b, c, ileft, iright); :}
+               | PROCEDURE IDENTIFICADOR:i PAR_A PAR_C PUNTO_COMA declaracion_variable:b BEGIN bloque_codigo:c END PUNTO_COMA
+                    {: RESULT = new Funtion(i, new ArrayList<Parametro>(), new Tipo(DataType.ANY), b, c, ileft, iright); :}
+               | PROCEDURE IDENTIFICADOR:i PAR_A parametros:a PAR_C PUNTO_COMA BEGIN bloque_codigo:c END PUNTO_COMA
+                    {: RESULT = new Funtion(i, a, new Tipo(DataType.ANY), null, c, ileft, iright); :}
+               | PROCEDURE IDENTIFICADOR:i PAR_A PAR_C PUNTO_COMA BEGIN bloque_codigo:c END PUNTO_COMA
+                    {: RESULT = new Funtion(i, new ArrayList<Parametro>(), new Tipo(DataType.ANY), null, c, ileft, iright); :}
+;
+
+parametros::= parametros:a PUNTO_COMA parametro:b {: RESULT = a; RESULT.add(b); :}
+            | parametro:a {: RESULT = new ArrayList<>(); RESULT.add(a); :}
+;
+
+parametro::=  VAR ids_variables:a DOS_PUNTOS data_type:b         {: RESULT = new Parametro(a, b, ""); :}
+            | VAR ids_variables:a DOS_PUNTOS IDENTIFICADOR:b     {: RESULT = new Parametro(a, DataType.PERSONALIZADO, b); :}
+            | ids_variables:a DOS_PUNTOS data_type:b             {: RESULT = new Parametro(a, b, ""); :}
+            | ids_variables:a DOS_PUNTOS IDENTIFICADOR:b         {: RESULT = new Parametro(a, DataType.PERSONALIZADO, b); :}
+;
+
+llamada_funcion::= IDENTIFICADOR:i PAR_A list_params:a PAR_C
+                    {: RESULT = new LlamadaFuncion(i, a, ileft, iright); :}
+                 | IDENTIFICADOR:i PAR_A PAR_C
+                    {: RESULT = new LlamadaFuncion(i, new ArrayList<Sentencia>(), ileft, iright); :}
+;
+
+//parametros que se usaran al llamar una funcion
+list_params::= list_params:a COMA expresion:b {: RESULT = a; RESULT.add(b); :}
+             | expresion:a {: RESULT = new ArrayList<>(); RESULT.add(a); :}
 ;
 
 bloque_codigo::= bloque_codigo:a stament_bloque:b    {: RESULT = a; RESULT.add(b); :}
                     | stament_bloque:a                         {: RESULT = new ArrayList<>(); RESULT.add(a); :}
 ;
 
-stament_bloque::=   /*  writeline:a PUNTO_COMA    {: RESULT = a; :}
-                    | readline:a PUNTO_COMA     {: RESULT = a; :}
-                    | asignacion:a PUNTO_COMA   {: RESULT = a; :}
-                    | sentencia_if:a PUNTO_COMA            {: RESULT = a; :}
-                    | setencia_case:a PUNTO_COMA {: RESULT = a; :}*/
-                    un_stament:a PUNTO_COMA     {: RESULT = a; :}
+stament_bloque::= un_stament:a PUNTO_COMA     {: RESULT = a; :}
 ;
 
 un_stament::= writeline:a       {: RESULT = a; :}
@@ -136,6 +184,9 @@ un_stament::= writeline:a       {: RESULT = a; :}
             | sentencia_while:a {: RESULT = a; :}
             | sentencia_for:a   {: RESULT = a; :}
             | repeat_until:a    {: RESULT = a; :}
+            | llamada_funcion:a {: RESULT = a; :}
+            | s_continue:a      {: RESULT = a; :}
+            | s_break:a         {: RESULT = a; :}
 ;
 
 
@@ -207,6 +258,7 @@ id_variable::= IDENTIFICADOR:a {: RESULT = a; :}
 
 //asignacion de variables
 asignacion::= IDENTIFICADOR:a IGUAL expresion:e     {: RESULT = new Asignacion(a, e, aleft, aright); :}
+            | IDENTIFICADOR:a COR_A expresion:b COR_C IGUAL expresion:c {: RESULT = new AsignacionArray(a, b, c, aleft, aright); :}
 ;
 
 //sentencias
@@ -246,6 +298,12 @@ sentencia_for::= FOR:i asignacion:a TO expresion:b DO BEGIN bloque_codigo:c END
 repeat_until::= REPEAT:i bloque_codigo:a UNTIL expresion:b {: RESULT = new RepeatUntil(a, b, ileft, iright); :}
 ;
 
+s_break::= BREAK:a {: RESULT = new SentenciaBreak(aleft, aright); :}
+;
+
+s_continue::= CONTINUE:a {: RESULT = new SentenciaContinue(aleft, aright); :}
+;
+
 //funciones
 writeline::= WRITELN:a PAR_A parametros_write:list PAR_C {: RESULT = new WriteLine(list, aleft, aright); :}
 ;
@@ -271,6 +329,8 @@ expresion::=  expresion:a SUMA:c expresion:b            {: RESULT = new Suma(a, 
             | expresion:a MENOR_IGUAL expresion:b       {: RESULT = new MenorIgual(a, b, aleft, aright); :}
             | expresion:a AND expresion:b               {: RESULT = new And(a, b, aleft, aright); :}
             | expresion:a OR expresion:b                {: RESULT = new OR(a, b, aleft, aright); :}
+            | expresion:a AND THEN expresion:b          {: RESULT = new AndThen(a, b, aleft, aright); :} %prec AND_THEN
+            | expresion:a OR ELSE expresion:b           {: RESULT = new OrElse(a, b, aleft, aright); :} %prec OR_ELSE
             | PAR_A expresion:a PAR_C                   {: RESULT = a; :}
             | NOT expresion:a                           {: RESULT = new NOT(a, aleft, aright); :}    %prec NOT
             | MENOS expresion:a                         {: RESULT = new Unario(a, aleft, aright); :} %prec UNARIO
@@ -284,7 +344,8 @@ valor::=  ENTERO:a  {: RESULT = new Terminal(Integer.parseInt(a), new Tipo(DataT
         | TRUE:a    {: RESULT = new Terminal(true, new Tipo(DataType.BOOLEAN), aleft, aright); :}
         | FALSE:a   {: RESULT = new Terminal(false, new Tipo(DataType.BOOLEAN), aleft, aright); :}
         | IDENTIFICADOR:a   {: RESULT = new Acceso(a, aleft, aright); :}
-        | IDENTIFICADOR:a COR_A expresion:b COR_C
+        | IDENTIFICADOR:a COR_A expresion:b COR_C {: RESULT = new AccesoArray(a, b, aleft, aright); :}
+        | llamada_funcion:a {: RESULT = a; :}
 ;
 
 data_type::=  INTEGER:a {: RESULT = DataType.ENTERO; :}

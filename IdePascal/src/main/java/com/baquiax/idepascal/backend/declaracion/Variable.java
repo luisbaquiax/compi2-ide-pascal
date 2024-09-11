@@ -5,6 +5,7 @@ import com.baquiax.idepascal.backend.errores.TipoError;
 import com.baquiax.idepascal.backend.simbol.*;
 import com.baquiax.idepascal.backend.stament.Sentencia;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Variable extends Sentencia {
@@ -110,9 +111,9 @@ public class Variable extends Sentencia {
             }
             DataType tipoExpresion = this.expresion.tipo.getDataType();
 
-            if(this.tipo.getDataType().equals(DataType.CARACTER) && tipoExpresion.equals(DataType.CADENA)){
+            if (this.tipo.getDataType().equals(DataType.CARACTER) && tipoExpresion.equals(DataType.CADENA)) {
                 String aux = value.toString();
-                if(aux.length() > 1){
+                if (aux.length() > 1) {
                     return new ErrorPascal(
                             TipoError.SEMANTICO.name(),
                             "No se puede mezclar '" + this.tipo.getDataType().nombre + "' con '" + tipoExpresion.nombre + "'.",
@@ -134,6 +135,7 @@ public class Variable extends Sentencia {
         for (String id : ids) {
             this.tipo.setTypeBase(this.tipo.getDataType());
             Simbolo agregando = new Simbolo(id, this.tipo, value, true);
+            agregando.setAmbito(tableSimbols.getNombre());
             if (!tableSimbols.agregarVariable(agregando, arbol)) {
                 arbol.getErrores().add(new ErrorPascal(
                         TipoError.SEMANTICO.name(),
@@ -154,8 +156,26 @@ public class Variable extends Sentencia {
         for (String elementId : ids) {
             Tipo tipo = new Tipo();
             tipo.setDataType(DataType.PERSONALIZADO);
-            tipo.setTypeBase(tipoBuscado.getTypeBase());
-            Simbolo agregando = new Simbolo(elementId, tipo, getValueDefault(tipoBuscado.getTypeBase()), true);
+            tipo.setTypeBase(tipoBuscado.getDataType());
+            tipo.setDimension(tipoBuscado.getDimension());
+            tipo.setIndiceMinimo(tipoBuscado.getIndiceMinimo());
+            tipo.setIndiceMaximo(tipoBuscado.getIndiceMaximo());
+
+            Simbolo agregando = new Simbolo(elementId, tipo, null, true);
+            agregando.setAmbito(tableSimbols.getNombre());
+
+            if (tipoBuscado.getDataType().equals(DataType.ARRAY)) {
+                List<Object> values = new ArrayList<>();
+                for (int j = 0; j < tipo.getIndiceMaximo() + 1; j++) {
+                    values.add(getValueDefault(tipoBuscado.getTypeBase()));
+                }
+                agregando.setValue(values);
+            } else if (tipoBuscado.getDataType().equals(DataType.SUBRANGO)) {
+                agregando.setValue(getValueDefault(DataType.ENTERO));
+            } else {
+                agregando.setValue(getValueDefault(tipoBuscado.getTypeBase()));
+            }
+
             agregando.setTipoPersonalizado(tipoBuscado.getId());
             if (!tableSimbols.agregarVariable(agregando, arbol)) {
                 arbol.getErrores().add(new ErrorPascal(
@@ -209,6 +229,7 @@ public class Variable extends Sentencia {
         for (String subs : ids) {
             Tipo tipo = new Tipo(subs, DataType.SUBRANGO, DataType.ENTERO, inferior, superior);
             Simbolo subrango = new Simbolo(subs, tipo, inferior, true);
+            subrango.setAmbito(tableSimbols.getNombre());
             if (!tableSimbols.agregarVariable(subrango, arbol)) {
                 arbol.getErrores().add(new ErrorPascal(
                         TipoError.SINTACTICO.name(),
@@ -255,7 +276,20 @@ public class Variable extends Sentencia {
 
         for (String i : ids) {
             Tipo tipo = new Tipo(i, DataType.ARRAY, this.tipo.getDataType(), indice1, indice2);
+            tipo.setDimension(indice2);
+
             Simbolo arreglo = new Simbolo(i, tipo, null, true);
+            if (this.tipo.getDataType().equals(DataType.CARACTER)) {
+                arreglo.setValue("");
+            } else {
+                List<Object> values = new ArrayList<>();
+                for (int j = 0; j < indice2 + 1; j++) {
+                    values.add(getValueDefault(this.tipo.getDataType()));
+                }
+                arreglo.setValue(values);
+            }
+
+            arreglo.setAmbito(tableSimbols.getNombre());
             if (!tableSimbols.agregarVariable(arreglo, arbol)) {
                 arbol.getErrores().add(
                         new ErrorPascal(TipoError.SINTACTICO.name(),
@@ -308,11 +342,17 @@ public class Variable extends Sentencia {
         for (String i : ids) {
             Tipo tipo = new Tipo();
             tipo.setDataType(DataType.ARRAY);
-            tipo.setTypeBase(tipoArray.getDataType());
+            tipo.setTypeBase(DataType.PERSONALIZADO);
             tipo.setIndiceMinimo(indice1);
             tipo.setIndiceMaximo(indice2);
+            tipo.setDimension(indice2);
 
-            Simbolo arreglo = new Simbolo(i, tipo, null, true);
+            List<Object> values = new ArrayList<>();
+            for (int j = 0; j < indice2 + 1; j++) {
+                values.add(getValueDefault(tipoArray.getTypeBase()));
+            }
+            Simbolo arreglo = new Simbolo(i, tipo, values, true);
+            arreglo.setAmbito(tableSimbols.getNombre());
             arreglo.setTipoPersonalizado(this.id);
             if (!tableSimbols.agregarVariable(arreglo, arbol)) {
                 arbol.getErrores().add(

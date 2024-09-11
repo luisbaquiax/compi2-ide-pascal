@@ -17,6 +17,7 @@ public class If extends Sentencia {
     private BloqueCodigo bloqueCodigo;
 
     private BloqueCodigo bloqueElse;
+
     public If(Sentencia condicion, Sentencia instruccion, Sentencia instruccionElse, int line, int col) {
         super(new Tipo(DataType.ANY), line, col);
         this.condicion = condicion;
@@ -36,7 +37,9 @@ public class If extends Sentencia {
         if (dataCondicion instanceof ErrorPascal) {
             return dataCondicion;
         }
-        if (!this.condicion.tipo.getDataType().equals(DataType.BOOLEAN)) {
+        if (!this.condicion.tipo.getDataType().equals(DataType.BOOLEAN)
+                && !dataCondicion.toString().equals("1")
+                && !dataCondicion.toString().equals("0")) {
             return new ErrorPascal(
                     TipoError.SEMANTICO.name(),
                     "La condicion debe ser de tipo '" + DataType.BOOLEAN + "'.",
@@ -45,8 +48,11 @@ public class If extends Sentencia {
         }
         TableSimbols entornoIf = new TableSimbols(tableSimbols);
         entornoIf.setNombre("IF");
-        if (Boolean.parseBoolean(dataCondicion.toString())) {
+        if (Boolean.parseBoolean(dataCondicion.toString()) || dataCondicion.toString().equals("1")) {
             if (this.instruccion != null) {
+                if(this.instruccion instanceof SentenciaBreak || this.instruccion instanceof SentenciaContinue){
+                    return this.instruccion;
+                }
                 Object value = this.instruccion.interpretar(arbol, entornoIf);
                 if (value instanceof ErrorPascal) {
                     return value;
@@ -58,18 +64,17 @@ public class If extends Sentencia {
             TableSimbols entornoElse = new TableSimbols(tableSimbols);
             entornoElse.setNombre("ELSE");
             if (this.instruccionElse != null) {
+                if(this.instruccionElse instanceof SentenciaBreak || this.instruccionElse instanceof SentenciaContinue){
+                    return this.instruccionElse;
+                }
                 Object valueElse = this.instruccionElse.interpretar(arbol, entornoElse);
                 if (valueElse instanceof ErrorPascal) {
                     return valueElse;
                 }
-            }else{
-                /*for(Sentencia s: this.instruccionesElse){
-                    Object valueElse = s.analizar(arbol, entornoElse);
-                    if (valueElse instanceof ErrorPascal) {
-                        return valueElse;
-                    }
-                }*/
-                return bloqueElse.interpretar(arbol, entornoElse);
+            } else {
+                if(bloqueElse !=null){
+                    return bloqueElse.interpretar(arbol, entornoElse);
+                }
             }
         }
         return null;

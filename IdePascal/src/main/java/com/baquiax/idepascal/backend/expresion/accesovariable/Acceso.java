@@ -26,12 +26,34 @@ public class Acceso extends Sentencia {
         }
         DataType tipoDato = simbolo.getTipo().getDataType();
         switch (tipoDato) {
-            case ENTERO, REAL, CARACTER, CADENA, SUBRANGO, BOOLEAN -> {
+            case ENTERO, REAL, CARACTER, CADENA -> {
                 this.tipo.setDataType(simbolo.getTipo().getDataType());
                 this.tipo.setTypeBase(simbolo.getTipo().getTypeBase());
                 return simbolo.getValue();
             }
-            case RECORD, ARRAY -> {
+            case SUBRANGO -> {
+                this.tipo.setDataType(DataType.ENTERO);
+                this.tipo.setTypeBase(DataType.ENTERO);
+                return simbolo.getValue();
+            }
+            case BOOLEAN -> {
+                this.tipo.setDataType(simbolo.getTipo().getDataType());
+                this.tipo.setTypeBase(simbolo.getTipo().getTypeBase());
+                int aux = Boolean.parseBoolean(simbolo.getValue().toString()) ? 1 : 0;
+                return aux;
+            }
+            case ARRAY -> {
+                if(simbolo.getTipo().getTypeBase().equals(DataType.CARACTER)){
+                    return simbolo.getValue();
+                }else{
+                    return new ErrorPascal(
+                            TipoError.SEMANTICO.name(),
+                            "La variable al que intentas accesar no es ENTERO, REAL, CHAR, STRING, SUB-RANGO, array de CHAR",
+                            this.line, this.col
+                    );
+                }
+            }
+            case RECORD -> {
                 return new ErrorPascal(
                         TipoError.SEMANTICO.name(),
                         "La variable al que intentas accesar no es ENTERO, REAL, CHAR, STRING, SUB-RANGO",
@@ -49,10 +71,21 @@ public class Acceso extends Sentencia {
         Tipo tablaTipo = arbol.getTablaTipos().getTipos().get(simbolo.getTipoPersonalizado());
         DataType tipoDato = tablaTipo.getDataType();
         switch (tipoDato) {
-            case ENTERO, REAL, CADENA, CARACTER, BOOLEAN, SUBRANGO -> {
+            case ENTERO, REAL, CADENA, CARACTER -> {
                 this.tipo.setDataType(tipoDato);
                 this.tipo.setTypeBase(tipoDato);
                 return simbolo.getValue();
+            }
+            case SUBRANGO -> {
+                this.tipo.setDataType(DataType.ENTERO);
+                this.tipo.setTypeBase(DataType.ENTERO);
+                return simbolo.getValue();
+            }
+            case BOOLEAN -> {
+                this.tipo.setDataType(simbolo.getTipo().getDataType());
+                this.tipo.setTypeBase(simbolo.getTipo().getTypeBase());
+                int aux = Boolean.parseBoolean(simbolo.getValue().toString()) ? 1 : 0;
+                return aux;
             }
             case RECORD, ARRAY -> {
                 return new ErrorPascal(

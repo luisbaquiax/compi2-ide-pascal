@@ -41,10 +41,24 @@ public class SentenciaWhile extends Sentencia {
         while ((boolean) this.condicion.interpretar(arbol, entornoWhile)) {
             TableSimbols entornoBucle = new TableSimbols(tableSimbols);
             for (Sentencia s : this.sentencias) {
+                if(s instanceof SentenciaBreak){
+                    return null;
+                }
+                if(s instanceof SentenciaContinue){
+                    break;
+                }
+
                 Object valueS = s.interpretar(arbol, entornoBucle);
                 if(valueS instanceof ErrorPascal e){
                     arbol.getErrores().add(e);
                 }
+                if(valueS instanceof SentenciaBreak){
+                    return null;
+                }
+                if(valueS instanceof SentenciaContinue){
+                    break;
+                }
+
             }
         }
 

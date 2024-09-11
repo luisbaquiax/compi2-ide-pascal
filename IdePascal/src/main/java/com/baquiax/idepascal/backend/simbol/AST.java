@@ -1,6 +1,7 @@
 package com.baquiax.idepascal.backend.simbol;
 
 import com.baquiax.idepascal.backend.errores.ErrorPascal;
+import com.baquiax.idepascal.backend.funcion.Funtion;
 import com.baquiax.idepascal.backend.stament.Sentencia;
 
 import java.util.ArrayList;
@@ -40,6 +41,22 @@ public class AST {
         return false;
     }
 
+    public void agregarFuncion(Sentencia funcion) {
+        if(funcion instanceof Funtion f){
+            this.funciones.add(f);
+        }
+    }
+
+    public Funtion searFuncion(String id) {
+        for (Sentencia s : this.funciones) {
+            Funtion funtion = (Funtion) s;
+            if (funtion.getId().equalsIgnoreCase(id)) {
+                return funtion;
+            }
+        }
+        return null;
+    }
+
     public HashMap<String, Object> getReporteSimbolos() {
         return reporteSimbolos;
     }
@@ -53,7 +70,7 @@ public class AST {
     }
 
     public void setLog(String log) {
-        this.log += log +"\n";
+        this.log += log + "\n";
     }
 
     public String getLog() {

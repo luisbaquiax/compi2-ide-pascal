@@ -41,7 +41,7 @@ public class Menor extends Sentencia {
                     case ENTERO, REAL -> { return Double.parseDouble(valueIzq.toString()) < Double.parseDouble(valueDer.toString()); }
                     case BOOLEAN -> {
                         int auxi = Boolean.parseBoolean(valueDer.toString()) ? 1 : 0;
-                        return (int) valueIzq < auxi;
+                        return Double.parseDouble(valueIzq.toString()) < auxi;
                     }
                     default -> {
                         return new ErrorPascal(

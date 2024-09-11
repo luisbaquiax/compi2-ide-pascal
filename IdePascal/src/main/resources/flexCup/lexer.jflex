@@ -18,6 +18,7 @@ LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]
 WhiteSpace     = {LineTerminator} | [ \t\f]+
 
+
     /* comments */
 Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 
@@ -122,8 +123,8 @@ FALSE = "0"
 <YYINITIAL> ";" { return symbol(sym.PUNTO_COMA, yytext()); }
 <YYINITIAL> "." { return symbol(sym.PUNTO, yytext()); }
 <YYINITIAL> "..." { return symbol(sym.TRES_PUNTO, yytext()); }
-<YYINITIAL> "(" { return symbol(sym.PAR_A, yytext()); }
-<YYINITIAL> ")" { return symbol(sym.PAR_C, yytext()); }
+<YYINITIAL> "\(" { return symbol(sym.PAR_A, yytext()); }
+<YYINITIAL> "\)" { return symbol(sym.PAR_C, yytext()); }
 <YYINITIAL> "\[" { return symbol(sym.COR_A, yytext()); }
 <YYINITIAL> "\]" { return symbol(sym.COR_C, yytext()); }
 <YYINITIAL> "=" { return symbol(sym.IGUALACION, yytext()); }

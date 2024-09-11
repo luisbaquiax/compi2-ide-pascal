@@ -26,15 +26,28 @@ public class RepeatUntil extends Sentencia {
 
         Object valueCondicion = null;
         do {
-            for(Sentencia s: this.sentencias){
+            for (Sentencia s : this.sentencias) {
+                if (s instanceof SentenciaBreak) {
+                    return null;
+                }
+                if (s instanceof SentenciaContinue) {
+                    break;
+                }
+
                 Object value = s.interpretar(arbol, entornoRepeat);
-                if(value instanceof ErrorPascal e){
+                if (value instanceof ErrorPascal e) {
                     arbol.getErrores().add(e);
                 }
 
+                if (value instanceof SentenciaBreak) {
+                    return null;
+                }
+                if (value instanceof SentenciaContinue) {
+                    break;
+                }
+
             }
-            valueCondicion = (boolean) this.condicion.interpretar(arbol, tableSimbols);
-            System.out.println(valueCondicion);
+            valueCondicion = this.condicion.interpretar(arbol, tableSimbols);
             if (valueCondicion instanceof ErrorPascal) {
                 return valueCondicion;
             }

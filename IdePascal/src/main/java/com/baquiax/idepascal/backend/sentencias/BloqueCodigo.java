@@ -9,7 +9,7 @@ import com.baquiax.idepascal.backend.stament.Sentencia;
 
 import java.util.List;
 
-public class BloqueCodigo extends Sentencia{
+public class BloqueCodigo extends Sentencia {
     private List<Sentencia> sentencias;
 
     public BloqueCodigo(List<Sentencia> sentencias, int line, int col) {
@@ -19,10 +19,16 @@ public class BloqueCodigo extends Sentencia{
 
     @Override
     public Object interpretar(AST arbol, TableSimbols tableSimbols) {
-        for(Sentencia s: this.sentencias){
+        for (Sentencia s : this.sentencias) {
+            if (s instanceof SentenciaContinue || s instanceof SentenciaBreak) {
+                return s;
+            }
             Object value = s.interpretar(arbol, tableSimbols);
-            if(value instanceof ErrorPascal e){
+            if (value instanceof ErrorPascal e) {
                 arbol.getErrores().add(e);
+            }
+            if (value instanceof SentenciaContinue || value instanceof SentenciaBreak) {
+                return value;
             }
         }
         return null;
