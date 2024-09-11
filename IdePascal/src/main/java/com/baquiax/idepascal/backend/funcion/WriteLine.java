@@ -31,4 +31,9 @@ public class WriteLine extends Sentencia {
         arbol.setLog(aux.toString().toString());
         return null;
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

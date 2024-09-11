@@ -40,4 +40,9 @@ public class Unario extends Sentencia{
                     this.expresion.line, this.expresion.col);}
         }
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

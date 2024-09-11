@@ -286,6 +286,11 @@ public class Asignacion extends Sentencia {
         return null;
     }
 
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
+
     public Object getValue() {
         return value;
     }

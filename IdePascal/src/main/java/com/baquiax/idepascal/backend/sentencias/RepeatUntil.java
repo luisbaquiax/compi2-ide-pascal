@@ -54,4 +54,9 @@ public class RepeatUntil extends Sentencia {
         } while (!(boolean) valueCondicion);
         return null;
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

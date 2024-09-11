@@ -38,4 +38,9 @@ public class AtributoRecord extends Sentencia {
     private Object getAtributoNativo(){
         return null;
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

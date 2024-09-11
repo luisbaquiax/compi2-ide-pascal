@@ -34,4 +34,8 @@ public class Constante extends Sentencia {
                 "La constante '" + this.id + "' ya está en uso.",
                 this.line, this.col);
     }
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

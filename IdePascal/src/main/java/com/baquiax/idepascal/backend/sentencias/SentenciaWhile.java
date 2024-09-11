@@ -64,4 +64,10 @@ public class SentenciaWhile extends Sentencia {
 
         return null;
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
+
 }

@@ -5,6 +5,7 @@ import com.baquiax.idepascal.backend.errores.ErrorPascal;
 import com.baquiax.idepascal.backend.errores.TipoError;
 import com.baquiax.idepascal.backend.simbol.*;
 import com.baquiax.idepascal.backend.stament.Sentencia;
+import com.baquiax.idepascal.utiles.Contador;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,5 +98,20 @@ public class LlamadaFuncion extends Sentencia {
             return valueFuncion;
         }
         return null;
+    }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        String nameAnterior = "n" + Contador.getCount();
+        String nameId = "n" + Contador.getCount();
+
+        String anteriorNode = nameAnterior + "[label=\"anterior\"];\n";
+        String idNode = nameId + "[label=\""+this.id+"()\"];\n";
+
+        String relation = nameAnterior + " -> " + nameId + ";\n";
+
+        String result = anteriorNode + idNode + relation;
+
+        return result;
     }
 }

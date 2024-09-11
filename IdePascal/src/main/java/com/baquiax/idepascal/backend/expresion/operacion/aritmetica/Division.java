@@ -156,4 +156,9 @@ public class Division extends Sentencia {
         }
     }
 
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
+
 }

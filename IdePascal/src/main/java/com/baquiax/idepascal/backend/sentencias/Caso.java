@@ -47,6 +47,11 @@ public class Caso extends Sentencia {
         return null;
     }
 
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
+
     public Sentencia getExpresion() {
         return expresion;
     }

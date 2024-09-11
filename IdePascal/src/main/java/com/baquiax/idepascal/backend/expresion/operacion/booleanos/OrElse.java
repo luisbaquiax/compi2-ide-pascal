@@ -48,4 +48,9 @@ public class OrElse extends Sentencia {
         }
         return false;
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

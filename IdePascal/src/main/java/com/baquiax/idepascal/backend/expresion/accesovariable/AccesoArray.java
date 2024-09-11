@@ -117,4 +117,9 @@ public class AccesoArray extends Sentencia {
             }
         }
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

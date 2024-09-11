@@ -185,4 +185,9 @@ public class Multiplicacion extends Sentencia {
             }
         }
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

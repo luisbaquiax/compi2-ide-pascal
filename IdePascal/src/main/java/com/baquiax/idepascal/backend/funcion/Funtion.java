@@ -56,6 +56,11 @@ public class Funtion extends Sentencia {
         return null;
     }
 
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
+
     public void setParams() {
         for (Parametro parametro : this.parametros) {
             for (String id : parametro.getIds()) {

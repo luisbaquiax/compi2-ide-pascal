@@ -92,4 +92,9 @@ public class Menor extends Sentencia {
             }
         }
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

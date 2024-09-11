@@ -16,4 +16,6 @@ public abstract class Sentencia {
     }
 
     public abstract Object interpretar(AST arbol, TableSimbols tableSimbols);
+
+    public abstract String generarArbolLlamadas(String anterior);
 }

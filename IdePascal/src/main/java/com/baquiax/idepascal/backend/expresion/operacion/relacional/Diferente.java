@@ -92,4 +92,9 @@ public class Diferente extends Sentencia {
             }
         }
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

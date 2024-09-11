@@ -49,4 +49,9 @@ public class OR extends Sentencia {
                 "relacional-or: Error semántico, expresión inválida. Se esperaba un BOOLEAN. valor: " + valueIzq,
                 this.operandoIzq.line, this.operandoIzq.col);
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

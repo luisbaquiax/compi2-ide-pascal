@@ -56,4 +56,9 @@ public class Modulo extends Sentencia {
                     this.operandoIzq.line, this.operandoIzq.col);
         }
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

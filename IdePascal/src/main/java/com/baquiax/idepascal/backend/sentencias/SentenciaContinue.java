@@ -15,4 +15,9 @@ public class SentenciaContinue extends Sentencia {
     public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         return null;
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

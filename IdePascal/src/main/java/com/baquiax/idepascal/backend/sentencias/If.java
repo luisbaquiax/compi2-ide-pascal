@@ -79,4 +79,20 @@ public class If extends Sentencia {
         }
         return null;
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        String aux = "";
+        if(this.instruccionElse!=null){
+            aux+= this.instruccionElse.generarArbolLlamadas(anterior);
+        }
+        if(this.instruccion!=null){
+            aux+= this.instruccion.generarArbolLlamadas(anterior);
+        }
+        if(this.bloqueCodigo!=null){
+            aux+= this.instruccion.generarArbolLlamadas(anterior);
+        }
+        return aux;
+    }
+
 }

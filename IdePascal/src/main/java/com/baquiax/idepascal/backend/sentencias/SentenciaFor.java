@@ -92,4 +92,10 @@ public class SentenciaFor extends Sentencia {
         --value;
         simbolo.setValue(value);
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
+
 }

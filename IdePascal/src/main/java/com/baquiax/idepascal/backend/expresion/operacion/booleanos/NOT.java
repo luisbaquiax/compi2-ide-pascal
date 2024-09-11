@@ -36,4 +36,9 @@ public class NOT extends Sentencia {
                 "relacional-not: Error semántico, expresión inválida. Se esperaba un BOOLEAN. valor: " + value,
                 this.expresion.line, this.expresion.line);
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

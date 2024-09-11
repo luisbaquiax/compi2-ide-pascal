@@ -384,6 +384,11 @@ public class AsignacionArray extends Sentencia {
         return null;
     }
 
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
+
     private void setValueBoolean(Object valueExpresion, Simbolo simbolo, int indice) {
         int aux = Boolean.parseBoolean(valueExpresion.toString()) ? 1 : 0;
         List<Object> values = (List<Object>) simbolo.getValue();

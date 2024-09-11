@@ -18,4 +18,9 @@ public class Terminal extends Sentencia {
     public Object interpretar(AST arbol, TableSimbols tableSimbols) {
         return this.value;
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

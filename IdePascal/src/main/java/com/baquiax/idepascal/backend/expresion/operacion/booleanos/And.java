@@ -49,4 +49,9 @@ public class And extends Sentencia {
                 "relacional-and: Error semántico, expresión inválida. Se esperaba un BOOLEAN",
                 this.operandoIzq.line, this.operandoIzq.col);
     }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
+        return null;
+    }
 }

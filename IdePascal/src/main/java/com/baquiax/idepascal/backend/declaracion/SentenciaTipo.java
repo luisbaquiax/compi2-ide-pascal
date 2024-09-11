@@ -84,7 +84,11 @@ public class SentenciaTipo extends Sentencia {
                 return declararTipoArray(arbol, tableSimbols);
             }
             case RECORD -> {
-                return null;
+                return new ErrorPascal(
+                        TipoError.SEMANTICO.name(),
+                        "No se ha desarrollado los tipos de datos RECORD",
+                        this.line, this.col
+                );
             }
         }
         return null;
@@ -198,6 +202,11 @@ public class SentenciaTipo extends Sentencia {
     }
 
     private Object validarExpresiones(Object value1, Object value2) {
+        return null;
+    }
+
+    @Override
+    public String generarArbolLlamadas(String anterior) {
         return null;
     }
 }
