@@ -115,6 +115,13 @@ components_program::= components_program:a component_program:b {: RESULT = a; RE
 
 component_program::= staments:a BEGIN bloque_codigo:b END PUNTO
                     {: RESULT = new ProgramaPrincipal(a, b, aleft, aright); :}
+                   | staments:a BEGIN END PUNTO
+                    {: RESULT = new ProgramaPrincipal(a, new ArrayList<Sentencia>(), aleft, aright); :}
+                   | BEGIN:a bloque_codigo:b END PUNTO
+                    {: RESULT = new ProgramaPrincipal(new ArrayList<Sentencia>(), b, aleft, aright); :}
+                   | BEGIN:a END PUNTO
+                    {: RESULT = new ProgramaPrincipal(new ArrayList<Sentencia>(), new ArrayList<Sentencia>(), aleft, aright); :}
+
 ;
 
 staments::=   staments:a stament:b  {: RESULT = a; RESULT.add(b); :}
@@ -308,6 +315,7 @@ s_continue::= CONTINUE:a {: RESULT = new SentenciaContinue(aleft, aright); :}
 
 //funciones
 writeline::= WRITELN:a PAR_A parametros_write:list PAR_C {: RESULT = new WriteLine(list, aleft, aright); :}
+           | WRITELN:a PAR_A PAR_C {: RESULT = new WriteLine(new ArrayList<Sentencia>(), aleft, aright); :}
 ;
 
 readline::= READLN:a PAR_A parametros_write:list PAR_C {: RESULT = new Readline(list, aleft, aright); :}
